@@ -1,0 +1,30 @@
+{
+    "name": "AITEE server",
+    "author": "AITEE team",
+    "license": "ISC",
+    "version": "1.0.0",
+    "description": "a great server for a social media app",
+    "main": "index.js",
+    "type": "module",
+    "scripts": {
+        "dev": "nodemon src/index.js",
+        "start": "node src/index.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "dependencies": {
+        "compression": "^1.7.4",
+        "dotenv": "^16.4.5",
+        "express": "^4.21.0",
+        "helmet": "^8.0.0",
+        "morgan": "^1.10.0",
+        "mysql2": "^3.11.3",
+        "nodemon": "^3.1.4",
+        "rate-limiter-flexible": "^5.0.4",
+        "reflect-metadata": "^0.2.2",
+        "socket.io": "^4.8.0",
+        "swagger-jsdoc": "^6.2.8",
+        "swagger-ui-express": "^5.0.1",
+        "typeorm": "^0.3.20"
+    }
+}
