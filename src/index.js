@@ -1,42 +1,41 @@
 import express from 'express';
-import route from './routes.js';
+import loader from './loader/index.js';
+import { port } from './config/index.js';
 
-import dotenv from 'dotenv';
-dotenv.config();
 const app = express();
-const port = process.env.PORT_SERVER || 3001;
 
-const { Client } = require('pg');
-const client = new Client({
-  host: 'localhost',
-  user: 'yourUsername',
-  password: 'yourPassword',
-  database: 'chat_app'
-});
+function isPortInUse(port) {
+    return new Promise((resolve, reject) => {
+        const server = app.listen(port, () => {
+            server.close(() => resolve(false));
+        });
+        server.on('error', (err) => {
+            if (err.code === 'EADDRINUSE') {
+                resolve(true);
+            } else {
+                reject(err);
+            }
+        });
+    });
+}
 
+async function startServer(port) {
+    try {
+        let currentPort = port;
+        while (await isPortInUse(currentPort)) {
+            console.log(`Port ${currentPort} is in use, trying ${currentPort + 1}...`);
+            currentPort++;
+        }
 
-// middleware xử lý dữ liệu từ form submit lên server. Phải có thì req.body mới có data
-app.use(express.urlencoded({ extended: true }));
-// Gửi từ code JS lên
-app.use(express.json());
+        await loader(app);
 
-// 
-route(app);
-
-// Khởi tạo server với cổng đã được xác định
-app.listen(port, () => {
-    console.log(`App listening at http://localhost:${port}`);
-  });
-  
-  // Xử lý sự kiện 'error' nếu cổng đã được sử dụng
-  app.on('error', (err) => {
-    if (err.code === 'EADDRINUSE') {
-      console.log(`Port ${port} is already in use`);
-      const newPort = +port + 1;
-      app.listen(newPort, () => {
-        console.log(`App listening at http://localhost:${newPort}`);
-      });
-    } else {
-      console.error('Error starting server:', err);
+        app.listen(currentPort, () => {
+            console.log(`App listening at http://localhost:${currentPort}`);
+        });
+    } catch (error) {
+        console.error('Failed to start server:', error);
+        process.exit(1);
     }
-  });
+}
+
+startServer(port);

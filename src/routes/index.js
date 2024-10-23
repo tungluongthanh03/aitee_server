@@ -1,9 +1,16 @@
-import chatRouter from "./chat.js"
-import authRouter from "./auth.js"
+import express from 'express';
+import swaggerJsdoc from 'swagger-jsdoc';
+import { serve, setup } from 'swagger-ui-express';
 
-function route(app) {
-  app.use("/api/chat", chatRouter);
-  app.use("/api/auth", authRouter);
-}
+import { specs, swaggerConfig } from '../config/index.js';
+import user from './user.js';
 
-export default route;
+const router = express.Router();
+
+const specDoc = swaggerJsdoc(swaggerConfig);
+router.use(specs, serve);
+router.get(specs, setup(specDoc, { explorer: true }));
+
+router.use('/user', user);
+
+export default router;
