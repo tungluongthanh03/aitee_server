@@ -7,7 +7,7 @@ import compression from 'compression';
 
 import { prefix, jwtSecretKey } from '../config/index.js';
 import routes from '../routes/index.js';
-import rateLimiter from '../middlewares/rate-limiter.js';
+import { rateLimiter } from '../middlewares/index.js';
 
 export default (app) => {
     process.on('uncaughtException', async (error) => {

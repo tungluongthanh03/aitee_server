@@ -14,5 +14,5 @@ export default {
             },
         ],
     },
-    apis: ['src/routes/*.js', 'src/models/index.js'],
+    apis: ['src/middlewares/**/*.js', 'src/controllers/**/*.js', 'src/models/entities/*.js'],
 };
