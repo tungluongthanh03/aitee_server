@@ -66,4 +66,25 @@ export const User = new EntitySchema({
             default: () => 'CURRENT_TIMESTAMP',
         },
     },
+    relations: {
+        has: {
+            type: 'many-to-many',
+            target: 'GroupChat',  // Reference to the User entity
+            joinTable: {
+                name: 'groupChat_user',
+                joinColumn: { name: 'userID', referencedColumnName: 'id' },
+                inverseJoinColumn: { name: 'groupID', referencedColumnName: 'groupID' },
+            },
+        },
+
+        isFriend: {
+            type: 'many-to-many',
+            target: 'User',  //
+            joinTable: {
+                name: 'is_friend',
+                joinColumn: { name: 'userID1', referencedColumnName: 'id' },
+                inverseJoinColumn: { name: 'userID2', referencedColumnName: 'id' },
+            }
+        }
+    }
 });

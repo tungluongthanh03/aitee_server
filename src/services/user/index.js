@@ -1,5 +1,6 @@
 import path from 'path';
 import fs from 'fs';
+import { UserRepo } from '../../models/index.js';
 
 export const deleteUserImages = (user) => {
     const dir = 'uploads/images';
@@ -25,4 +26,30 @@ export const deleteUserImages = (user) => {
             });
         });
     });
+};
+
+export const getFriendList = async (userId) => {
+    try {
+        const list = await UserRepo.query(
+            `SELECT 
+                u.ID AS friendID,
+                u.username,
+                u.avatar
+            FROM 
+                is_friend f
+            JOIN 
+                "user" u 
+            ON 
+                (f."userID1" = u.ID OR f."userID2" = u.ID)
+            WHERE 
+                (f."userID1" = $1 OR f."userID2" = $1)
+                AND u.ID != $1;
+            `,
+            [userId],
+        );
+        return list;
+    } catch (error) {
+        console.error('Error fetching list: ', error);
+        return [];
+    }
 };
