@@ -2,6 +2,7 @@ import { EntitySchema } from 'typeorm';
 
 export const User = new EntitySchema({
     name: 'User',
+    tableName: 'users',
     columns: {
         id: {
             type: 'uuid',
@@ -61,9 +62,21 @@ export const User = new EntitySchema({
             length: 255,
             nullable: true,
         },
-        createTime: {
+        createdAt: {
             type: 'timestamp',
             default: () => 'CURRENT_TIMESTAMP',
+        },
+    },
+    relations: {
+        posts: {
+            target: 'Post',
+            type: 'one-to-many',
+            cascade: true,
+        },
+        reactions: {
+            target: 'React',
+            type: 'one-to-many',
+            inverseSide: 'user',
         },
     },
 });

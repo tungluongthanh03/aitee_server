@@ -4,6 +4,7 @@ import { serve, setup } from 'swagger-ui-express';
 
 import { specs, swaggerConfig } from '../config/index.js';
 import user from './user.js';
+import post from './post.js';
 
 const router = express.Router();
 
@@ -12,5 +13,6 @@ router.use(specs, serve);
 router.get(specs, setup(specDoc, { explorer: true }));
 
 router.use('/user', user);
+router.use('/post', post);
 
 export default router;
