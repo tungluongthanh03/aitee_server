@@ -19,6 +19,9 @@ export default async (req, res) => {
         const users = await UserRepo.find({
             skip,
             take: limit,
+            order: {
+                createdAt: 'DESC',
+            },
             select: {
                 password: false,
             },

@@ -12,6 +12,9 @@ const {
     DB_PORT,
     DB_USER,
     DB_PASSWORD,
+    CLOUDINARY_NAME,
+    CLOUDINARY_API_KEY,
+    CLOUDINARY_API_SECRET,
 } = process.env;
 
 export const port = PORT || 3000;
@@ -25,6 +28,10 @@ export const db_port = DB_PORT;
 export const db_name = DB_NAME;
 export const db_user = DB_USER;
 export const db_password = DB_PASSWORD;
+
+export const cloudinaryName = CLOUDINARY_NAME;
+export const cloudinaryApiKey = CLOUDINARY_API_KEY;
+export const cloudinarySecret = CLOUDINARY_API_SECRET;
 
 export const prefix = '/api';
 export const specs = '/api-docs';

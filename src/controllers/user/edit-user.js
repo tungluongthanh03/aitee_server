@@ -1,5 +1,6 @@
 import { UserRepo } from '../../models/index.js';
 import { validateEditUser } from '../../validators/user.validator.js';
+import { uploadMedia, deleteMedia } from '../../services/cloudinary/index.js';
 
 export default async (req, res) => {
     try {
@@ -31,7 +32,12 @@ export default async (req, res) => {
 
         // Save uploaded image path in user profile if image is provided
         if (req.file) {
-            user.avatar = `/uploads/images/${req.file.filename}`;
+            if (user.avatar) {
+                await deleteMedia(user.avatar);
+            }
+
+            const photoUrl = await uploadMedia(req.file);
+            user.avatar = photoUrl;
         }
 
         await UserRepo.save(user);

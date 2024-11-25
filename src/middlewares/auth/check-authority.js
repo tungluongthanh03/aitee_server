@@ -8,6 +8,7 @@ export async function checkAdmin(req, res, next) {
                 .status(403)
                 .json({ error: 'Access denied. You do not have permission to access.' });
 
+        req.user.isAdmin = true;
         next();
     } catch (err) {
         return res.status(500).json({ error: err.message });

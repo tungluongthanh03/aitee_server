@@ -18,7 +18,6 @@ export default async (req, res) => {
 
         const user = await UserRepo.findOneBy({ id: req.user.id });
         const validPassword = await compare(req.body.newPassword, user.password);
-        console.log(validPassword);
 
         if (validPassword) {
             return res.status(400).json({
