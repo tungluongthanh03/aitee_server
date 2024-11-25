@@ -14,6 +14,7 @@ export default async (req, res) => {
                 error: error.details[0].message,
             });
         }
+<<<<<<< HEAD
 
         const user = await UserRepo.findOneBy({ id: req.user.id });
         const validPassword = await compare(req.body.newPassword, user.password);
@@ -21,6 +22,14 @@ export default async (req, res) => {
         if (validPassword) {
             return res.status(400).json({
                 error: 'Your new password should not be same with the old one, please try a different password.',
+=======
+        const user = await UserRepo.findOneBy({ id: req.user.id });
+        const validPassword = await compare(req.body.newPassword, user.password);
+        console.log(validPassword);
+        if (validPassword) {
+            return res.status(400).json({
+                error: 'Your new password should not be same with the old one, please try a different password. ',
+>>>>>>> 2c4d49b (Initial commit)
             });
         }
 
