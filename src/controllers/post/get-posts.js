@@ -14,7 +14,7 @@ export const getPosts = async (req, res) => {
         const limit = parseInt(req.query.limit);
         const skip = (page - 1) * limit;
 
-        let posts = await PostRepo.findAndCount({
+        let posts = await PostRepo.find({
             take: limit,
             skip,
             order: {
@@ -26,13 +26,15 @@ export const getPosts = async (req, res) => {
         // update the number of views
         posts.forEach(async (post) => {
             post.nViews += 1;
-            await PostRepo.persistAndFlush(post);
+            await PostRepo.save(post);
         });
 
+        // remove the reactions from the response and add the number of reactions
         posts = posts.map((post) => {
             return {
                 ...post,
-                nReactions: post.reactions.count(),
+                nReactions: post.reactions.length,
+                reactions: undefined,
             };
         });
 

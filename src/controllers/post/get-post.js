@@ -15,13 +15,13 @@ export const getPost = async (req, res) => {
             });
         }
 
-        console.log(post);
-
-        post.nReactions = post.reactions.length;
-
         // update the number of views
         post.nViews += 1;
         await PostRepo.save(post);
+
+        // remove the reactions from the response and add the number of reactions
+        post.nReactions = post.reactions ? post.reactions.length : 0;
+        post.reactions = undefined;
 
         return res.status(200).json({
             post,

@@ -22,25 +22,10 @@ export const createPost = async (req, res) => {
                 mimetype: file.mimetype,
             }));
 
-            const mediaUrls = await Promise.all(
-                media.map(async (file) => ({
-                    url: await uploadMedia(file),
-                    mimetype: file.mimetype,
-                })),
-            );
+            const mediaUrls = await Promise.all(media.map((file) => uploadMedia(file)));
 
-            const images = mediaUrls.reduce((acc, file) => {
-                if (file.mimetype.includes('image')) {
-                    acc.push(file.url);
-                }
-                return acc;
-            }, []);
-            const videos = mediaUrls.reduce((acc, file) => {
-                if (file.mimetype.includes('video')) {
-                    acc.push(file.url);
-                }
-                return acc;
-            }, []);
+            const images = mediaUrls.filter((media) => media.includes('image'));
+            const videos = mediaUrls.filter((media) => media.includes('video'));
 
             post.images = images;
             post.videos = videos;

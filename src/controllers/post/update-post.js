@@ -23,13 +23,9 @@ export const updatePost = async (req, res) => {
             });
         }
 
-        if (post.user.id !== req.user.id) {
-            return res.status(403).json({
-                error: 'You are not authorized to update this post.',
-            });
+        if (req.body.content) {
+            post.content = req.body.content;
         }
-
-        post.content = req.body.content;
 
         if (req.files) {
             const media = req.files.map((file) => ({
@@ -42,13 +38,15 @@ export const updatePost = async (req, res) => {
             const videos = mediaUrls.filter((media) => media.includes('video'));
 
             if (post.images) {
-                const oldImages = post.images.map((image) => image.public_id);
-                await deleteMedia(oldImages);
+                post.images.forEach(async (image) => {
+                    await deleteMedia(image, 'image');
+                });
             }
 
             if (post.videos) {
-                const oldVideos = post.videos.map((video) => video.public_id);
-                await deleteMedia(oldVideos);
+                post.videos.forEach(async (video) => {
+                    await deleteMedia(video, 'video');
+                });
             }
 
             post.images = images;
@@ -59,6 +57,7 @@ export const updatePost = async (req, res) => {
 
         return res.status(200).json({
             message: 'Post updated successfully.',
+            post,
         });
     } catch (error) {
         console.log(error);

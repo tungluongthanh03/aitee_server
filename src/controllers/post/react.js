@@ -16,8 +16,8 @@ export const react = async (req, res) => {
 
         const reaction = await ReactRepo.findOne({
             where: {
-                post: post,
-                user: req.user,
+                post: { id: post.id },
+                user: { id: req.user.id },
             },
         });
 

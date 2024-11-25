@@ -24,9 +24,9 @@ export const getReacts = async (req, res) => {
         const limit = parseInt(req.query.limit);
         const skip = (page - 1) * limit;
 
-        const reactions = await ReactRepo.find({
+        let reactions = await ReactRepo.find({
             where: {
-                post: post,
+                post: { id: post.id },
             },
             order: {
                 createdAt: 'DESC',
@@ -35,6 +35,17 @@ export const getReacts = async (req, res) => {
             take: limit,
             skip,
         });
+
+        reactions = reactions.map((reaction) => ({
+            user: {
+                id: reaction.user.id,
+                username: reaction.user.username,
+                avatar: reaction.user.avatar,
+                firstName: reaction.user.firstName,
+                lastName: reaction.user.lastName,
+            },
+            createdAt: reaction.createdAt,
+        }));
 
         return res.status(200).json({
             reactions,

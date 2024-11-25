@@ -7,6 +7,8 @@ const fileFilter = (_req, file, cb) => {
         file.mimetype === 'image/jpg' ||
         file.mimetype === 'image/png' ||
         file.mimetype === 'image/svg+xml' ||
+        file.mimetype === 'image/gif' ||
+        file.mimetype === 'image/webp' ||
         file.mimetype === 'video/mp4' ||
         file.mimetype === 'video/mpeg' ||
         file.mimetype === 'video/quicktime'

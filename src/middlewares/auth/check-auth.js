@@ -17,6 +17,7 @@ export default async (req, res, next) => {
 
     try {
         req.user = verify(token, jwtSecretKey);
+        req.user.isAdmin = false;
 
         const exists = await UserRepo.exists({ where: { id: req.user.id } }).catch((err) => {
             return res.status(500).json({ error: err.message });

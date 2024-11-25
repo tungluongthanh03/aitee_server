@@ -7,6 +7,7 @@ export const deletePost = async (req, res) => {
             where: {
                 id: req.params.id,
             },
+            relations: ['user'],
         });
 
         if (!post) {
@@ -15,25 +16,30 @@ export const deletePost = async (req, res) => {
             });
         }
 
-        if (post.user.id !== req.user.id) {
+        console.log(post.user, req.user);
+
+        if (post.user.id !== req.user.id && !req.user.isAdmin) {
             return res.status(403).json({
                 error: 'You are not authorized to delete this post.',
             });
         }
 
         if (post.images) {
-            const images = post.images.map((image) => image.public_id);
-            await deleteMedia(images);
+            post.images.forEach(async (image) => {
+                await deleteMedia(image, 'image');
+            });
         }
 
         if (post.videos) {
-            const videos = post.videos.map((video) => video.public_id);
-            await deleteMedia(videos);
+            post.videos.forEach(async (video) => {
+                await deleteMedia(video, 'video');
+            });
         }
 
         const reactions = await ReactRepo.find({
             where: {
-                post: post,
+                post: { id: post.id },
+                user: { id: req.user.id },
             },
         });
 

@@ -16,7 +16,7 @@ const uploadMedia = (media, resourceType = 'auto') => {
                 if (error) {
                     reject(error);
                 } else {
-                    const url = cloudinary.url(result.public_id, {
+                    const url = cloudinary.url(result.secure_url, {
                         transformation: [
                             {
                                 quality: 'auto',
@@ -33,10 +33,10 @@ const uploadMedia = (media, resourceType = 'auto') => {
     });
 };
 
-const deleteMedia = async (url) => {
+const deleteMedia = async (url, resourceType = 'image') => {
     const parts = url.split('/');
-    const publicId = parts[parts.length - 1].split('?')[0];
-    return cloudinary.uploader.destroy(publicId);
+    const publicId = parts[parts.length - 1].split('.')[0];
+    return cloudinary.uploader.destroy(publicId, { resource_type: resourceType });
 };
 
 export { uploadMedia, deleteMedia };
