@@ -2,7 +2,6 @@ import multer, { memoryStorage } from 'multer';
 
 const storage = memoryStorage();
 const fileFilter = (_req, file, cb) => {
-    console.log(file);
     if (
         file.mimetype === 'image/jpeg' ||
         file.mimetype === 'image/jpg' ||

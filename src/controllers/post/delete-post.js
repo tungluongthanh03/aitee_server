@@ -16,8 +16,6 @@ export const deletePost = async (req, res) => {
             });
         }
 
-        console.log(post.user, req.user);
-
         if (post.user.id !== req.user.id && !req.user.isAdmin) {
             return res.status(403).json({
                 error: 'You are not authorized to delete this post.',
