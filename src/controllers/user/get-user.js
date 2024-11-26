@@ -24,38 +24,38 @@ export default async (req, res) => {
  * /user:
  *    get:
  *      summary: Get User Info
- *      parameters:
- *        - in: header
- *          name: Authorization
- *          schema:
- *            type: string
- *          description: Put access token here
+ *      security:
+ *        - bearerAuth: []
  *      tags:
  *        - User
  *      responses:
  *        "200":
- *          description: The user information has gotten successfully.
+ *          description: The user information has been retrieved successfully.
  *          content:
  *              application/json:
  *                  schema:
  *                      type: object
  *                      properties:
- *                          resultMessage:
- *                              $ref: '#/components/schemas/ResultMessage'
- *                          resultCode:
- *                              $ref: '#/components/schemas/ResultCode'
  *                          user:
  *                              $ref: '#/components/schemas/User'
- *        "401":
- *          description: Invalid token.
+ *        "404":
+ *          description: User not found
  *          content:
  *              application/json:
  *                  schema:
- *                      $ref: '#/components/schemas/Result'
+ *                      type: object
+ *                      properties:
+ *                          message:
+ *                              type: string
+ *                              example: User not found
  *        "500":
  *          description: An internal server error occurred, please try again.
  *          content:
  *              application/json:
  *                  schema:
- *                      $ref: '#/components/schemas/Result'
+ *                      type: object
+ *                      properties:
+ *                          message:
+ *                              type: string
+ *                              example: An internal server error occurred, please try again.
  */

@@ -33,3 +33,74 @@ export const getPost = async (req, res) => {
             .json({ error: 'An internal server error occurred, please try again.' });
     }
 };
+
+/**
+ * @swagger
+ * /post/{id}:
+ *   get:
+ *     summary: Get a post by ID
+ *     security:
+ *       - bearerAuth: []
+ *     tags:
+ *       - Post
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the post to retrieve
+ *     responses:
+ *       "200":
+ *         description: The post information has been retrieved successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 post:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                     content:
+ *                       type: string
+ *                     images:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                     videos:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                     nViews:
+ *                       type: integer
+ *                     nReactions:
+ *                       type: integer
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
+ *       "404":
+ *         description: Post not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Post not found.
+ *       "500":
+ *         description: An internal server error occurred, please try again.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: An internal server error occurred, please try again.
+ */

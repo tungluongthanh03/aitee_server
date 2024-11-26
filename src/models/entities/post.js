@@ -81,3 +81,59 @@ export const React = new EntitySchema({
         },
     },
 });
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Post:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           format: uuid
+ *         content:
+ *           type: string
+ *         images:
+ *           type: array
+ *           items:
+ *             type: string
+ *         videos:
+ *           type: array
+ *           items:
+ *             type: string
+ *         nViews:
+ *           type: integer
+ *           default: 0
+ *         nReactions:
+ *           type: integer
+ *           default: 0
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *         user:
+ *           $ref: '#/components/schemas/User'
+ *         reactions:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/React'
+ *     React:
+ *       type: object
+ *       properties:
+ *         userId:
+ *           type: string
+ *           format: uuid
+ *         postId:
+ *           type: string
+ *           format: uuid
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *         user:
+ *           $ref: '#/components/schemas/User'
+ *         post:
+ *           $ref: '#/components/schemas/Post'
+ */

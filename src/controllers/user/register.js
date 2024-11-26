@@ -88,18 +88,18 @@ export default async (req, res) => {
  *                  type: string
  *                password:
  *                  type: string
- *                name:
+ *                firstName:
  *                  type: string
- *                language:
+ *                lastName:
  *                  type: string
- *                  enum: ['tr', 'en']
- *                platform:
+ *                phoneNumber:
  *                  type: string
- *                  enum: ['Android', 'IOS']
- *                timezone:
- *                  type: number
- *                deviceId:
+ *                sex:
  *                  type: string
+ *                  enum: ['male', 'female', 'other']
+ *                birthday:
+ *                  type: string
+ *                  format: date
  *      tags:
  *        - User
  *      responses:

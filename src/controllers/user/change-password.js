@@ -45,14 +45,10 @@ export default async (req, res) => {
  * /user/change-password:
  *    post:
  *      summary: Changes the Password
- *      parameters:
- *        - in: header
- *          name: Authorization
- *          schema:
- *            type: string
- *          description: Put access token here
+ *      security:
+ *        - bearerAuth: []
  *      requestBody:
- *        description: Old and new passwords
+ *        description: New password
  *        required: true
  *        content:
  *          application/json:
@@ -61,6 +57,9 @@ export default async (req, res) => {
  *              properties:
  *                newPassword:
  *                  type: string
+ *                  description: The new password
+ *              required:
+ *                - newPassword
  *      tags:
  *        - User
  *      responses:
@@ -71,7 +70,7 @@ export default async (req, res) => {
  *                  schema:
  *                      $ref: '#/components/schemas/Result'
  *        "400":
- *          description: Please provide old and new passwords that are longer than 6 letters and shorter than 20 letters.
+ *          description: Please provide a new password that is longer than 6 letters and shorter than 20 letters.
  *          content:
  *              application/json:
  *                  schema:

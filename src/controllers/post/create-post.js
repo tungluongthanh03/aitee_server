@@ -44,3 +44,55 @@ export const createPost = async (req, res) => {
             .json({ error: 'An internal server error occurred, please try again.' });
     }
 };
+
+/**
+ * @swagger
+ * /post:
+ *    post:
+ *      summary: Create a new post
+ *      security:
+ *        - bearerAuth: []
+ *      requestBody:
+ *        description: Content and media files for the post
+ *        required: true
+ *        content:
+ *          multipart/form-data:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                content:
+ *                  type: string
+ *                  description: The content of the post
+ *                media:
+ *                  type: array
+ *                  items:
+ *                    type: string
+ *                    format: binary
+ *      tags:
+ *        - Post
+ *      responses:
+ *        "200":
+ *          description: Post created successfully.
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          message:
+ *                              type: string
+ *                              example: Post created successfully.
+ *                          post:
+ *                              $ref: '#/components/schemas/Post'
+ *        "400":
+ *          description: Validation error for post content
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      $ref: '#/components/schemas/Result'
+ *        "500":
+ *          description: An internal server error occurred, please try again.
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      $ref: '#/components/schemas/Result'
+ */

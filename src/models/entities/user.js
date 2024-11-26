@@ -80,3 +80,62 @@ export const User = new EntitySchema({
         },
     },
 });
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           format: uuid
+ *         email:
+ *           type: string
+ *           example: user@example.com
+ *         username:
+ *           type: string
+ *           example: username123
+ *         phoneNumber:
+ *           type: string
+ *           example: 1234567890
+ *         firstName:
+ *           type: string
+ *           example: John
+ *         lastName:
+ *           type: string
+ *           example: Doe
+ *         sex:
+ *           type: string
+ *           enum: ['male', 'female', 'other']
+ *           example: male
+ *         birthday:
+ *           type: string
+ *           format: date
+ *           example: 1990-01-01
+ *         address:
+ *           type: string
+ *           example: 123 Main St
+ *         avatar:
+ *           type: string
+ *           example: http://example.com/avatar.jpg
+ *         online:
+ *           type: boolean
+ *           example: true
+ *         biography:
+ *           type: string
+ *           example: This is a biography.
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           example: 2023-01-01T00:00:00Z
+ *         posts:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Post'
+ *         reactions:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/React'
+ */

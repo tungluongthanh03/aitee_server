@@ -20,6 +20,9 @@ export const getPosts = async (req, res) => {
             order: {
                 createdAt: 'DESC',
             },
+            where: {
+                user: { id: req.user.id },
+            },
             relations: ['reactions'],
         });
 
@@ -48,3 +51,76 @@ export const getPosts = async (req, res) => {
             .json({ error: 'An internal server error occurred, please try again.' });
     }
 };
+
+/**
+ * @swagger
+ * /post/posts:
+ *   get:
+ *     summary: Get a list of posts
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         required: true
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         required: true
+ *         description: Number of posts per page
+ *     tags:
+ *       - Post
+ *     responses:
+ *       "200":
+ *         description: A list of posts has been retrieved successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 posts:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                       content:
+ *                         type: string
+ *                       images:
+ *                         type: array
+ *                         items:
+ *                           type: string
+ *                       videos:
+ *                         type: array
+ *                         items:
+ *                           type: string
+ *                       nViews:
+ *                         type: integer
+ *                       nReactions:
+ *                         type: integer
+ *                       createdAt:
+ *                         type: string
+ *                         format: date-time
+ *                       updatedAt:
+ *                         type: string
+ *                         format: date-time
+ *       "400":
+ *         description: Invalid query parameters.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Result'
+ *       "500":
+ *         description: An internal server error occurred, please try again.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Result'
+ */

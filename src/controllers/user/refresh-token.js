@@ -42,6 +42,8 @@ export default async (req, res) => {
  * /user/refresh-token:
  *    post:
  *      summary: Refreshes the Access Token
+ *      security:
+ *        - bearerAuth: []
  *      requestBody:
  *        description: Valid Refresh Token
  *        required: true
@@ -62,10 +64,9 @@ export default async (req, res) => {
  *                  schema:
  *                      type: object
  *                      properties:
- *                          resultMessage:
- *                              $ref: '#/components/schemas/ResultMessage'
- *                          resultCode:
- *                              $ref: '#/components/schemas/ResultCode'
+ *                          message:
+ *                              type: string
+ *                              example: The token is refreshed successfully.
  *                          accessToken:
  *                              type: string
  *                          refreshToken:

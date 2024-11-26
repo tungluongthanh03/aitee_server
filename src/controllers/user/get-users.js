@@ -33,3 +33,57 @@ export default async (req, res) => {
         res.status(500).json({ message: 'An internal server error occurred, please try again.' });
     }
 };
+
+/**
+ * @swagger
+ * /user/users:
+ *    get:
+ *      summary: Get a list of users
+ *      security:
+ *        - bearerAuth: []
+ *      parameters:
+ *        - in: query
+ *          name: page
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *          required: true
+ *          description: Page number
+ *        - in: query
+ *          name: limit
+ *          schema:
+ *            type: integer
+ *            minimum: 1
+ *          required: true
+ *          description: Number of users per page
+ *      tags:
+ *        - Admin
+ *      responses:
+ *        "200":
+ *          description: A list of users has been retrieved successfully.
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          total:
+ *                              type: integer
+ *                          length:
+ *                              type: integer
+ *                          users:
+ *                              type: array
+ *                              items:
+ *                                  $ref: '#/components/schemas/User'
+ *        "400":
+ *          description: Invalid query parameters.
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      $ref: '#/components/schemas/Result'
+ *        "500":
+ *          description: An internal server error occurred, please try again.
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      $ref: '#/components/schemas/Result'
+ */

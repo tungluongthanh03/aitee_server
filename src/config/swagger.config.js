@@ -13,6 +13,20 @@ export default {
                 url: 'http://localhost:3000/api/',
             },
         ],
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT',
+                },
+            },
+        },
+        security: [
+            {
+                bearerAuth: [],
+            },
+        ],
     },
     apis: ['src/middlewares/**/*.js', 'src/controllers/**/*.js', 'src/models/entities/*.js'],
 };

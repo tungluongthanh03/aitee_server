@@ -1,22 +1,12 @@
-import { PostRepo, ReactRepo } from '../../models/index.js';
-import { validateGetReacts } from '../../validators/post.validator.js';
+import { PostRepo } from '../../models/index.js';
+import { validateGetPosts } from '../../validators/post.validator.js';
 
-export const getReacts = async (req, res) => {
+export const getPostsByUserId = async (req, res) => {
     try {
-        const { error } = validateGetReacts(req.query);
+        const { error } = validateGetPosts(req.query);
         if (error) {
-            return res.status(400).json({ error: error.details[0].message });
-        }
-
-        const post = await PostRepo.findOne({
-            where: {
-                id: req.params.id,
-            },
-        });
-
-        if (!post) {
-            return res.status(404).json({
-                error: 'Post not found.',
+            return res.status(400).json({
+                error: error.details[0].message,
             });
         }
 
@@ -24,31 +14,31 @@ export const getReacts = async (req, res) => {
         const limit = parseInt(req.query.limit);
         const skip = (page - 1) * limit;
 
-        let reactions = await ReactRepo.find({
-            where: {
-                post: { id: post.id },
-            },
+        let posts = await PostRepo.find({
+            take: limit,
+            skip,
             order: {
                 createdAt: 'DESC',
             },
-            relations: ['user'],
-            take: limit,
-            skip,
+            where: {
+                user: { id: req.params.id },
+            },
+            relations: ['reactions'],
         });
 
-        reactions = reactions.map((reaction) => ({
-            user: {
-                id: reaction.user.id,
-                username: reaction.user.username,
-                avatar: reaction.user.avatar,
-                firstName: reaction.user.firstName,
-                lastName: reaction.user.lastName,
-            },
-            createdAt: reaction.createdAt,
-        }));
+        // don't update the number of views because this is admin route
+
+        // remove the reactions from the response and add the number of reactions
+        posts = posts.map((post) => {
+            return {
+                ...post,
+                nReactions: post.reactions.length,
+                reactions: undefined,
+            };
+        });
 
         return res.status(200).json({
-            reactions,
+            posts,
         });
     } catch (error) {
         console.log(error);
@@ -60,20 +50,20 @@ export const getReacts = async (req, res) => {
 
 /**
  * @swagger
- * /post/{id}/reacts:
+ * /post/{id}/posts:
  *   get:
- *     summary: Get reactions for a post by ID
+ *     summary: Get posts by user ID
  *     security:
  *       - bearerAuth: []
  *     tags:
- *       - Post
+ *       - Admin
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: string
- *         description: The ID of the post to retrieve reactions for
+ *         description: The ID of the user to retrieve posts for
  *       - in: query
  *         name: page
  *         schema:
@@ -87,34 +77,40 @@ export const getReacts = async (req, res) => {
  *           type: integer
  *           minimum: 1
  *         required: true
- *         description: Number of reactions per page
+ *         description: Number of posts per page
  *     responses:
  *       "200":
- *         description: A list of reactions has been retrieved successfully.
+ *         description: A list of posts has been retrieved successfully.
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 reactions:
+ *                 posts:
  *                   type: array
  *                   items:
  *                     type: object
  *                     properties:
- *                       user:
- *                         type: object
- *                         properties:
- *                           id:
- *                             type: string
- *                           username:
- *                             type: string
- *                           avatar:
- *                             type: string
- *                           firstName:
- *                             type: string
- *                           lastName:
- *                             type: string
+ *                       id:
+ *                         type: string
+ *                       content:
+ *                         type: string
+ *                       images:
+ *                         type: array
+ *                         items:
+ *                           type: string
+ *                       videos:
+ *                         type: array
+ *                         items:
+ *                           type: string
+ *                       nViews:
+ *                         type: integer
+ *                       nReactions:
+ *                         type: integer
  *                       createdAt:
+ *                         type: string
+ *                         format: date-time
+ *                       updatedAt:
  *                         type: string
  *                         format: date-time
  *       "400":
@@ -124,7 +120,7 @@ export const getReacts = async (req, res) => {
  *             schema:
  *               $ref: '#/components/schemas/Result'
  *       "404":
- *         description: Post not found.
+ *         description: User not found.
  *         content:
  *           application/json:
  *             schema:
@@ -132,7 +128,7 @@ export const getReacts = async (req, res) => {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: Post not found.
+ *                   example: User not found.
  *       "500":
  *         description: An internal server error occurred, please try again.
  *         content:

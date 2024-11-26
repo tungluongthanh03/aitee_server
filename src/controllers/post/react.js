@@ -46,3 +46,52 @@ export const react = async (req, res) => {
             .json({ error: 'An internal server error occurred, please try again.' });
     }
 };
+
+/**
+ * @swagger
+ * /post/{id}/react:
+ *   post:
+ *     summary: React to a post by ID
+ *     security:
+ *       - bearerAuth: []
+ *     tags:
+ *       - Post
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the post to react to
+ *     responses:
+ *       "200":
+ *         description: Reaction updated successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Reaction updated successfully.
+ *       "404":
+ *         description: Post not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Post not found.
+ *       "500":
+ *         description: An internal server error occurred, please try again.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: An internal server error occurred, please try again.
+ */

@@ -62,38 +62,32 @@ export default async (req, res) => {
  * /user:
  *    put:
  *      summary: Edit the Profile Information
- *      parameters:
- *        - in: header
- *          name: Authorization
- *          schema:
- *            type: string
- *          description: Put access token here
- *        - in: formData
- *          name: image
- *          required: false
- *          schema:
- *            type: file
- *          description: Image file here
+ *      security:
+ *        - bearerAuth: []
  *      requestBody:
  *        description: Some of the user profile information to change
  *        required: false
  *        content:
- *          application/json:
+ *          multipart/form-data:
  *            schema:
  *              type: object
  *              properties:
- *                name:
+ *                firstName:
+ *                  type: string
+ *                lastName:
+ *                  type: string
+ *                birthday:
+ *                  type: string
+ *                  format: date
+ *                address:
+ *                  type: string
+ *                biography:
  *                  type: string
  *                username:
  *                  type: string
- *                language:
+ *                avatar:
  *                  type: string
- *                  enum: ['tr', 'en']
- *                gender:
- *                  type: string
- *                  enum: ['male', 'female', 'other']
- *                birthDate:
- *                  type: string
+ *                  format: binary
  *      tags:
  *        - User
  *      responses:

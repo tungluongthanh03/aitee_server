@@ -35,12 +35,8 @@ export default async (req, res) => {
  * /user/forgot-password:
  *    post:
  *      summary: Saves the Password when Forgot
- *      parameters:
- *        - in: header
- *          name: Authorization
- *          schema:
- *            type: string
- *          description: Put access token here
+ *      security:
+ *        - bearerAuth: []
  *      requestBody:
  *        description: New password
  *        required: true

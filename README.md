@@ -37,6 +37,20 @@ CLOUDINARY_API_KEY=your_cloudinary_api_key
 CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 ```
 
+## Getting Keys
+
+-   **JWT_SECRET_KEY**: Generate a secure random string to use as your JWT secret key.
+-   **REFRESH_TOKEN_SECRET_KEY**: Generate another secure random string for the refresh token secret key.
+-   **CLOUDINARY_NAME**, **CLOUDINARY_API_KEY** and **CLOUDINARY_API_SECRET**: Sign up for a Cloudinary account and get your API keys from the Cloudinary dashboard.
+
+## Connecting to the Database
+
+The project uses PostgreSQL as the database. Ensure you have PostgreSQL installed and running. Update the `.env` file with your database credentials.
+
+## Certificates
+
+Place your CA certificate in the `certs/` directory. The `ca.pem` file should be located at `certs/ca.pem`.
+
 ## Running the Server
 
 ```bash
@@ -45,7 +59,7 @@ npm start
 
 ## API Documentation
 
-API documentation is available at `http://localhost:3000/api-docs`.
+API documentation is available at `http://localhost:3000/api/api-docs`.
 
 ## Project Structure
 
@@ -60,6 +74,8 @@ src/
         index.js
         swagger.config.js
     controllers/
+        comment/
+        friend/
         post/
         user/
     data-source.js
@@ -77,14 +93,13 @@ src/
         entities/
         index.js
     routes/
+        comment.js
+        friend.js
         index.js
         post.js
         user.js
     services/
         auth/
-        cloudinary/
-        user/
+        ...
     validators/
-        post.validator.js
-        user.validator.js
 ```

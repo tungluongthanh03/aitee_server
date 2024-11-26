@@ -10,7 +10,7 @@ export function validateCreatePost(body) {
 
 export function validateUpdatePost(body) {
     const schema = Joi.object({
-        content: Joi.string().min(0).max(255),
+        content: Joi.string().min(1).max(255),
     });
 
     return schema.validate(body);
