@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
+import { readFileSync } from 'fs';
 
 import { db_host, db_port, db_name, db_password, db_user } from './config/index.js';
 
@@ -14,4 +15,8 @@ export const AppDataSource = new DataSource({
     synchronize: true,
     logging: true,
     connectTimeout: 10000,
+    ssl: {
+        rejectUnauthorized: true,
+        ca: readFileSync('certs/ca.pem').toString(),
+    },
 });

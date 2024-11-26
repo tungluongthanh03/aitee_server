@@ -9,10 +9,10 @@ export default async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // create new user without password
-        const { password, ...newUser } = user;
+        // remove password from user object
+        user.password = undefined;
 
-        res.status(200).json({ user: newUser });
+        res.status(200).json({ user });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'An internal server error occurred, please try again.' });
