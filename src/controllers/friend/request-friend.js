@@ -30,10 +30,7 @@ export default async (req, res) => {
 
         res.status(200).json({
             message: 'Added friend successfully',
-            request: {
-                sender: req.user.id,
-                user: { id: reciever.id },
-            },
+            request,
         });
     } catch (error) {
         console.error(error);

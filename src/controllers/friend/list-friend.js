@@ -9,15 +9,36 @@ export default async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: 'User not found.' });
         }
+        const page = parseInt(req.query.page) || 1;
+        const limit = 5;
+        const offset = (page - 1) * limit;
 
-        const list = await RequestRepo.find({
+        const [list, countFriends] = await RequestRepo.findAndCount({
             where: {
                 user: { id: user.id },
                 status: true,
             },
+            take: limit,
+            skip: offset,
         });
+        const totalPages = Math.ceil(countRequests / limit);
 
-        res.json(list);
+        if (page > totalPages) {
+            return res.status(400).json({
+                message: 'Requested page exceeds total pages.',
+                totalPages,
+                currentPage: page,
+            });
+        }
+        res.status(200).json({
+            message: 'Friend requests fetched successfully.',
+            data: {
+                list,
+                countFriends,
+                totalPages,
+                currentPage: page,
+            },
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'An internal server error occurred, please try again.' });

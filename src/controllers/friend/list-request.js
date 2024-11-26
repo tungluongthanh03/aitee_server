@@ -19,6 +19,8 @@ export default async (req, res) => {
                 user: { id: user.id },
                 status: false,
             },
+            take: limit,
+            skip: offset,
         });
         const totalPages = Math.ceil(countRequests / limit);
 

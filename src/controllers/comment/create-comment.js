@@ -1,11 +1,11 @@
 import { CommentRepo } from '../../models/index.js';
-import { UserRepo } from '../../models/index.js';
 
-import { validateComment } from '../../validators/comment.validator.js';
+import { validateCreateComment } from '../../validators/comment.validator.js';
+import { uploadMedia } from '../../services/cloudinary/index.js';
 
 export default async (req, res) => {
     try {
-        const { error } = validateComment(req.body);
+        const { error } = validateCreateComment(req.body);
         if (error) {
             return res.status(400).json({
                 error: error.details[0].message,
@@ -20,21 +20,32 @@ export default async (req, res) => {
         //     return res.status(404).json({ message: 'Post not found' });
         // }
         const userID = req.user.id;
-        const user = await UserRepo.findOneBy({ userID });
+
         const comment = await CommentRepo.create({
             content: req.body.content,
             postID: req.params.postID,
-            user: user,
+            rootID: req.params.commentID,
+            commentOwner: userID,
         });
+        if (req.files) {
+            const media = req.files.map((file) => ({
+                buffer: file.buffer,
+                mimetype: file.mimetype,
+            }));
 
+            const mediaUrls = await Promise.all(media.map((file) => uploadMedia(file)));
+
+            const images = mediaUrls.filter((media) => media.includes('image'));
+            const videos = mediaUrls.filter((media) => media.includes('video'));
+
+            comment.images = images;
+            comment.videos = videos;
+        }
         await CommentRepo.save(comment);
 
         return res.status(201).json({
             message: 'Comment added successfully',
-            comment: {
-                content: comment.content,
-                commentOwner: user.id,
-            },
+            comment,
         });
     } catch (error) {
         console.log(error);

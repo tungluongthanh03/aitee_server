@@ -4,8 +4,7 @@ export const Comment = new EntitySchema({
     name: 'Comment',
     columns: {
         content: {
-            type: 'varchar',
-            length: 500,
+            type: 'text',
         },
         createTime: {
             type: 'timestamp',
@@ -20,11 +19,18 @@ export const Comment = new EntitySchema({
             type: 'int4',
             nullable: false,
         },
-        // rootID: {
-        //     type: 'uuid',
-        //     nullable: false,
-        //     default: () => 'uuid_generate_v4()',
-        // },
+        images: {
+            type: 'json',
+            nullable: true,
+        },
+        videos: {
+            type: 'json',
+            nullable: true,
+        },
+        rootID: {
+            type: 'uuid',
+            nullable: true,
+        },
         commentOwner: {
             type: 'uuid',
             nullable: false,
@@ -42,16 +48,16 @@ export const Comment = new EntitySchema({
             nullable: false,
             onDelete: 'CASCADE',
         },
-        // rootComment: {
-        //     type: 'many-to-one',
-        //     target: 'Comment',
-        //     joinColumn: {
-        //         name: 'rootID',
-        //         referencedColumnName: 'commentID',
-        //     },
-        //     nullable: true,
-        //     onDelete: 'CASCADE',
-        // },
+        rootComment: {
+            type: 'many-to-one',
+            target: 'Comment',
+            joinColumn: {
+                name: 'rootID',
+                referencedColumnName: 'commentID',
+            },
+            nullable: true,
+            onDelete: 'CASCADE',
+        },
         // post: {
         //     type: 'many-to-one',
         //     target: 'Post',

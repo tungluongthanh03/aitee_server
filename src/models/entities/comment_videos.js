@@ -14,16 +14,16 @@ export const comment_videos = new EntitySchema({
             nullable: true,
         },
     },
-    relations: {
-        comment: {
-            type: 'many-to-one',
-            target: 'Comment',
-            joinColumn: {
-                name: 'commentVideoID',
-                referencedColumnName: 'commentID',
-            },
-            nullable: false,
-            onDelete: 'CASCADE',
-        },
-    },
+    // relations: {
+    //     comment: {
+    //         type: 'many-to-one',
+    //         target: 'Comment',
+    //         joinColumn: {
+    //             name: 'commentVideoID',
+    //             referencedColumnName: 'commentID',
+    //         },
+    //         nullable: false,
+    //         onDelete: 'CASCADE',
+    //     },
+    // },
 });

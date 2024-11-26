@@ -11,6 +11,7 @@ import {
 
 const router = Router();
 
+router.post('/create/:postID/:commentID', auth, createComment);
 router.post('/create/:postID', auth, createComment);
 router.delete('/delete/:commentID', auth, deleteComment);
 router.put('/edit/:commentID', auth, editComment);
