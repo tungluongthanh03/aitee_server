@@ -42,12 +42,12 @@ export default async (req, res) => {
 
         await UserRepo.save(user);
 
-        // create new user without password
-        const { password, ...newUser } = user;
+        // remove password from user object
+        user.password = undefined;
 
         return res.status(200).json({
             message: 'Your profile information was changed successfully.',
-            user: newUser,
+            user,
         });
     } catch (error) {
         console.log(error);

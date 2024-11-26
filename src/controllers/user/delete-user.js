@@ -1,5 +1,5 @@
 import { UserRepo } from '../../models/index.js';
-import { deleteUserImages } from '../../services/user/index.js';
+import { deleteMedia } from '../../services/cloudinary/index.js';
 
 export default async (req, res) => {
     try {
@@ -10,7 +10,9 @@ export default async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        deleteUserImages(user);
+        if (user.image) {
+            await deleteMedia(user.image, 'image');
+        }
         await UserRepo.delete(user.id);
 
         res.status(200).json({ message: 'Your account was deleted successfully.' });

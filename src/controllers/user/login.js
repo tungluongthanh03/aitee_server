@@ -33,16 +33,12 @@ export default async (req, res) => {
         const accessToken = signAccessToken(user.id);
         const refreshToken = signRefreshToken(user.id);
 
+        // remove password from user object
+        user.password = undefined;
+
         return res.status(200).json({
             message: 'You logged in successfully.',
-            user: {
-                id: user.id,
-                email: user.email,
-                username: user.username,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                avatar: user.avatar,
-            },
+            user,
             accessToken,
             refreshToken,
         });
