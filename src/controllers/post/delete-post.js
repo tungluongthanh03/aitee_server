@@ -3,8 +3,11 @@ import { deleteMedia } from '../../services/cloudinary/index.js';
 
 export const deletePost = async (req, res) => {
     try {
-        const post = await PostRepo.findOneBy({
-            id: req.params.id,
+        const post = await PostRepo.findOne({
+            where: {
+                id: req.params.postId,
+            },
+            relations: ['user'],
         });
 
         if (!post) {
@@ -31,15 +34,6 @@ export const deletePost = async (req, res) => {
             });
         }
 
-        const reactions = await ReactRepo.find({
-            where: {
-                post: { id: post.id },
-                user: { id: req.user.id },
-            },
-        });
-
-        await ReactRepo.remove(reactions);
-
         await PostRepo.remove(post);
 
         return res.status(200).json({
@@ -55,7 +49,7 @@ export const deletePost = async (req, res) => {
 
 /**
  * @swagger
- * /post/{id}:
+ * /post/{postId}:
  *   delete:
  *     summary: Delete a post by ID
  *     security:
@@ -65,7 +59,7 @@ export const deletePost = async (req, res) => {
  *       - Admin
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: postId
  *         required: true
  *         schema:
  *           type: string

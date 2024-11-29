@@ -72,10 +72,17 @@ export const User = new EntitySchema({
             target: 'Post',
             type: 'one-to-many',
             cascade: true,
+            inverseSide: 'user',
         },
         reactions: {
             target: 'React',
             type: 'one-to-many',
+            inverseSide: 'user',
+        },
+        comments: {
+            target: 'Comment',
+            type: 'one-to-many',
+            cascade: true,
             inverseSide: 'user',
         },
     },
@@ -138,4 +145,8 @@ export const User = new EntitySchema({
  *           type: array
  *           items:
  *             $ref: '#/components/schemas/React'
+ *         comments:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Comment'
  */

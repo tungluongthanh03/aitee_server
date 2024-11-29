@@ -10,23 +10,35 @@ import {
     getReacts,
     getPostsByUserId,
 } from '../controllers/post/index.js';
+import {
+    createComment,
+    listComment,
+    editComment,
+    deleteComment,
+} from '../controllers/comment/index.js';
 import { auth, mediaUpload, checkAdmin } from '../middlewares/index.js';
 
 const router = Router();
 
 // User routes
 router.post('/', auth, mediaUpload.array('media', 10), createPost);
-router.put('/:id', auth, mediaUpload.array('media', 10), updatePost);
-router.delete('/:id', auth, deletePost);
-router.get('/:id', auth, getPost);
+router.put('/:postId', auth, mediaUpload.array('media', 10), updatePost);
+router.delete('/:postId', auth, deletePost);
 router.get('/posts', auth, getPosts);
+router.get('/:postId', auth, getPost);
 
 // React routes
-router.post('/:id/react', auth, react);
-router.get('/:id/reacts', auth, getReacts);
+router.post('/:postId/react', auth, react);
+router.get('/:postId/reacts', auth, getReacts);
+
+// Comment routes
+router.post('/:postId/comment', auth, mediaUpload.array('media', 10), createComment);
+router.put('/:postId/comment/:commentId', auth, mediaUpload.array('media', 10), editComment);
+router.delete('/:postId/comment/:commentId', auth, deleteComment);
+router.get('/:postId/comments', auth, listComment);
 
 // Admin routes
-router.get('/:id/posts', auth, checkAdmin, getPostsByUserId);
-router.delete('/:id', auth, checkAdmin, deletePost);
+router.get('/:userId/posts', auth, checkAdmin, getPostsByUserId);
+router.delete('/:postId', auth, checkAdmin, deletePost);
 
 export default router;

@@ -21,12 +21,12 @@ export const getPostsByUserId = async (req, res) => {
                 createdAt: 'DESC',
             },
             where: {
-                user: { id: req.params.id },
+                user: { id: req.params.userId },
             },
             relations: ['reactions'],
         });
 
-        // don't update the number of views because this is admin route
+        // don't update the number of views and number of comments because this is admin route
 
         // remove the reactions from the response and add the number of reactions
         posts = posts.map((post) => {
@@ -50,7 +50,7 @@ export const getPostsByUserId = async (req, res) => {
 
 /**
  * @swagger
- * /post/{id}/posts:
+ * /post/{userId}/posts:
  *   get:
  *     summary: Get posts by user ID
  *     security:
@@ -59,7 +59,7 @@ export const getPostsByUserId = async (req, res) => {
  *       - Admin
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: userId
  *         required: true
  *         schema:
  *           type: string

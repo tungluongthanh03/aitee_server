@@ -4,7 +4,7 @@ export const react = async (req, res) => {
     try {
         const post = await PostRepo.findOne({
             where: {
-                id: req.params.id,
+                id: req.params.postId,
             },
         });
 
@@ -49,7 +49,7 @@ export const react = async (req, res) => {
 
 /**
  * @swagger
- * /post/{id}/react:
+ * /post/{postId}/react:
  *   post:
  *     summary: React to a post by ID
  *     security:
@@ -58,7 +58,7 @@ export const react = async (req, res) => {
  *       - Post
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: postId
  *         required: true
  *         schema:
  *           type: string

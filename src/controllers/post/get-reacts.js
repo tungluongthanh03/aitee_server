@@ -10,7 +10,7 @@ export const getReacts = async (req, res) => {
 
         const post = await PostRepo.findOne({
             where: {
-                id: req.params.id,
+                id: req.params.postId,
             },
         });
 
@@ -60,7 +60,7 @@ export const getReacts = async (req, res) => {
 
 /**
  * @swagger
- * /post/{id}/reacts:
+ * /post/{postId}/reacts:
  *   get:
  *     summary: Get reactions for a post by ID
  *     security:
@@ -69,7 +69,7 @@ export const getReacts = async (req, res) => {
  *       - Post
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: postId
  *         required: true
  *         schema:
  *           type: string

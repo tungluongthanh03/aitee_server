@@ -11,8 +11,11 @@ export const updatePost = async (req, res) => {
             });
         }
 
-        const post = await PostRepo.findOneBy({
-            id: req.params.id,
+        const post = await PostRepo.findOne({
+            where: {
+                id: req.params.postId,
+            },
+            relations: ['user'],
         });
 
         if (!post) {
@@ -32,9 +35,7 @@ export const updatePost = async (req, res) => {
         }
 
         if (req.files) {
-            const media = req.files.map((file) => ({
-                buffer: file.buffer,
-            }));
+            const media = req.files.map((file) => ({ buffer: file.buffer }));
 
             const mediaUrls = await Promise.all(media.map((file) => uploadMedia(file)));
 
@@ -59,6 +60,9 @@ export const updatePost = async (req, res) => {
 
         await PostRepo.save(post);
 
+        // remove the user from the response
+        post.user = undefined;
+
         return res.status(200).json({
             message: 'Post updated successfully.',
             post,
@@ -73,7 +77,7 @@ export const updatePost = async (req, res) => {
 
 /**
  * @swagger
- * /post/{id}:
+ * /post/{postId}:
  *   put:
  *     summary: Update a post by ID
  *     security:
@@ -82,7 +86,7 @@ export const updatePost = async (req, res) => {
  *       - Post
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: postId
  *         required: true
  *         schema:
  *           type: string
@@ -133,7 +137,11 @@ export const updatePost = async (req, res) => {
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Result'
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Post not found.
  *       "500":
  *         description: An internal server error occurred, please try again.
  *         content:

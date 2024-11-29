@@ -4,9 +4,9 @@ export const getPost = async (req, res) => {
     try {
         const post = await PostRepo.findOne({
             where: {
-                id: req.params.id,
+                id: req.params.postId,
             },
-            relations: ['reactions'],
+            relations: ['reactions', 'comments'],
         });
 
         if (!post) {
@@ -22,6 +22,11 @@ export const getPost = async (req, res) => {
         // remove the reactions from the response and add the number of reactions
         post.nReactions = post.reactions ? post.reactions.length : 0;
         post.reactions = undefined;
+
+        // remove the comments from the response and add the number of comments
+        post.nComments = post.comments ? post.comments.length : 0;
+        post.sampleComments = post.comments ? post.comments.slice(0, 3) : [];
+        post.comments = undefined;
 
         return res.status(200).json({
             post,
@@ -77,6 +82,12 @@ export const getPost = async (req, res) => {
  *                       type: integer
  *                     nReactions:
  *                       type: integer
+ *                     nComments:
+ *                       type: integer
+ *                     sampleComments:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Comment'
  *                     createdAt:
  *                       type: string
  *                       format: date-time

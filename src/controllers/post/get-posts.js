@@ -23,7 +23,7 @@ export const getPosts = async (req, res) => {
             where: {
                 user: { id: req.user.id },
             },
-            relations: ['reactions'],
+            relations: ['reactions', 'comments'],
         });
 
         // update the number of views
@@ -38,6 +38,16 @@ export const getPosts = async (req, res) => {
                 ...post,
                 nReactions: post.reactions.length,
                 reactions: undefined,
+            };
+        });
+
+        // remove the comments from the response and add the number of comments
+        posts = posts.map((post) => {
+            return {
+                ...post,
+                nComments: post.comments.length,
+                sampleComments: post.comments.slice(0, 3),
+                comments: undefined,
             };
         });
 
@@ -105,6 +115,12 @@ export const getPosts = async (req, res) => {
  *                         type: integer
  *                       nReactions:
  *                         type: integer
+ *                       nComments:
+ *                         type: integer
+ *                       sampleComments:
+ *                         type: array
+ *                         items:
+ *                           $ref: '#/components/schemas/Comment'
  *                       createdAt:
  *                         type: string
  *                         format: date-time

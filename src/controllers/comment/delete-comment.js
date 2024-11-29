@@ -1,21 +1,43 @@
 import { CommentRepo } from '../../models/index.js';
-import { UserRepo } from '../../models/index.js';
+import { deleteMedia } from '../../services/cloudinary/index.js';
 
 export default async (req, res) => {
     try {
-        const commentID = req.params.commentID;
-        const comment = await CommentRepo.findOneBy({ commentID });
+        const commentID = req.params.commentId;
+        const comment = await CommentRepo.findOne({
+            where: { id: commentID },
+            relations: ['post', 'user'],
+        });
+
         if (!comment) {
-            return res.status(404).json({ message: 'Comment not found' });
+            return res.status(404).json({ error: 'Comment not found' });
         }
 
-        if (comment.id != req.user.id) {
-            return res.status(403).json({ message: "Can't delete other people's comments " });
+        if (comment.post.id !== req.params.postId) {
+            return res.status(403).json({
+                error: 'You are not authorized to delete this comment.',
+            });
         }
 
-        // check if the comment is root
+        if (comment.user.id !== req.user.id) {
+            return res.status(403).json({
+                error: 'You are not authorized to delete this comment.',
+            });
+        }
 
-        await CommentRepo.delete(commentID);
+        if (comment.images) {
+            comment.images.forEach(async (image) => {
+                await deleteMedia(image, 'image');
+            });
+        }
+
+        if (comment.videos) {
+            comment.videos.forEach(async (video) => {
+                await deleteMedia(video, 'video');
+            });
+        }
+
+        await CommentRepo.remove(comment);
 
         res.status(200).json({ message: `Comment with ID ${commentID} was deleted successfully.` });
     } catch (error) {
@@ -26,47 +48,65 @@ export default async (req, res) => {
 
 /**
  * @swagger
- * /comments/{commentID}:
- *    delete:
- *      summary: Delete a specific comment by its ID
- *      parameters:
- *        - in: path
- *          name: commentID
- *          required: true
- *          schema:
- *            type: integer
- *          description: ID of the comment to be deleted
- *      tags:
- *        - Comments
- *      responses:
- *        "200":
- *          description: Comment deleted successfully
- *          content:
- *              application/json:
- *                  schema:
- *                      type: object
- *                      properties:
- *                          message:
- *                              type: string
- *                              example: "Comment with ID 1 was deleted successfully."
- *        "404":
- *          description: Comment not found
- *          content:
- *              application/json:
- *                  schema:
- *                      type: object
- *                      properties:
- *                          message:
- *                              type: string
- *                              example: "Comment not found"
- *        "500":
- *          description: Internal server error
- *          content:
- *              application/json:
- *                  schema:
- *                      type: object
- *                      properties:
- *                          message:
- *                              type: string
- *                              example: "An internal server error occurred, please try again."
+ * /post/{postId}/comment/{commentId}:
+ *   delete:
+ *     summary: Delete a comment by ID
+ *     security:
+ *       - bearerAuth: []
+ *     tags:
+ *       - Comment
+ *     parameters:
+ *       - in: path
+ *         name: postId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the post to which the comment belongs
+ *       - in: path
+ *         name: commentId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the comment to delete
+ *     responses:
+ *       "200":
+ *         description: Comment deleted successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Comment with ID {commentId} was deleted successfully.
+ *       "403":
+ *         description: You are not authorized to delete this comment.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: You are not authorized to delete this comment.
+ *       "404":
+ *         description: Comment not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Comment not found.
+ *       "500":
+ *         description: An internal server error occurred, please try again.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: An internal server error occurred, please try again.
  */

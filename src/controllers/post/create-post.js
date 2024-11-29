@@ -17,10 +17,7 @@ export const createPost = async (req, res) => {
         });
 
         if (req.files) {
-            const media = req.files.map((file) => ({
-                buffer: file.buffer,
-                mimetype: file.mimetype,
-            }));
+            const media = req.files.map((file) => ({ buffer: file.buffer }));
 
             const mediaUrls = await Promise.all(media.map((file) => uploadMedia(file)));
 
