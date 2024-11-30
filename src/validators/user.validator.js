@@ -61,3 +61,12 @@ export function validateEditUser(body) {
     });
     return schema.validate(body);
 }
+
+export function validateSearchUser(query) {
+    const schema = Joi.object({
+        page: Joi.number().min(1).required(),
+        limit: Joi.number().min(1).required(),
+        query: Joi.string().min(1).max(100).required(),
+    });
+    return schema.validate(query);
+}

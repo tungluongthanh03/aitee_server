@@ -8,14 +8,15 @@ import {
     listRequest,
     deleteFriend,
 } from '../controllers/friend/index.js';
-import { auth, imageUpload, checkAdmin } from '../middlewares/index.js';
+import { auth } from '../middlewares/index.js';
 
 const router = Router();
 
-router.post('/request-friend/:id', auth, requestFriend);
-router.patch('/accept-friend/:requestID', auth, acceptFriend);
-router.get('/list-friend/:id', auth, listFriend);
-router.get('/list-request/:id', auth, listRequest);
-router.delete('/deny-friend/:requestID', auth, denyFriend);
-router.delete('/delete-friend/:requestID', auth, deleteFriend);
+router.post('/request/:receiverId', auth, requestFriend);
+router.post('/accept/:senderId', auth, acceptFriend);
+router.post('/reject/:senderId', auth, denyFriend);
+router.delete('/delete-friend/:userId', auth, deleteFriend);
+router.get('/list-friends', auth, listFriend);
+router.get('/list-requests', auth, listRequest);
+
 export default router;

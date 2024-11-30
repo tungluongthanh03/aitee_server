@@ -14,7 +14,7 @@ export default async (req, res) => {
         const limit = parseInt(req.query.limit);
         const skip = (page - 1) * limit;
 
-        const comments = await CommentRepo.find({
+        const [comments, total] = await CommentRepo.findAndCount({
             take: limit,
             skip,
             order: {
@@ -25,10 +25,10 @@ export default async (req, res) => {
             },
         });
 
-        return res.status(200).json({ comments });
+        return res.status(200).json({ comments, total });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'An internal server error occurred, please try again.' });
+        res.status(500).json({ error: 'An internal server error occurred, please try again.' });
     }
 };
 

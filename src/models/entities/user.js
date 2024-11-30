@@ -68,6 +68,30 @@ export const User = new EntitySchema({
         },
     },
     relations: {
+        sentRequests: {
+            target: 'Request',
+            type: 'one-to-many',
+            cascade: true,
+            inverseSide: 'sender',
+        },
+        receivedRequests: {
+            target: 'Request',
+            type: 'one-to-many',
+            cascade: true,
+            inverseSide: 'receiver',
+        },
+        acceptors: {
+            target: 'Friend',
+            type: 'one-to-many',
+            cascade: true,
+            inverseSide: 'acceptor',
+        },
+        accepteds: {
+            target: 'Friend',
+            type: 'one-to-many',
+            cascade: true,
+            inverseSide: 'accepted',
+        },
         posts: {
             target: 'Post',
             type: 'one-to-many',
@@ -149,4 +173,20 @@ export const User = new EntitySchema({
  *           type: array
  *           items:
  *             $ref: '#/components/schemas/Comment'
+ *         sentRequests:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Request'
+ *         receivedRequests:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Request'
+ *         acceptors:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Friend'
+ *         accepteds:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Friend'
  */

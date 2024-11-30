@@ -9,6 +9,7 @@ import {
     editUser,
     getUsers,
     getUser,
+    searchUser,
     deleteUser,
     deleteUserById,
 } from '../controllers/user/index.js';
@@ -26,6 +27,7 @@ router.post('/forgot-password', auth, forgotPassword);
 router.post('/change-password', auth, changePassword);
 router.put('/', auth, imageUpload.single('avatar'), editUser);
 router.get('/', auth, getUser);
+router.get('/search', auth, searchUser);
 router.delete('/', auth, deleteUser);
 
 // Admin routes

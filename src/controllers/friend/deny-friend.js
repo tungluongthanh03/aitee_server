@@ -1,22 +1,79 @@
-import { UserRepo } from '../../models/index.js';
-import { RequestRepo } from '../../models/index.js';
+import { UserRepo, RequestRepo } from '../../models/index.js';
 
 export default async (req, res) => {
     try {
-        const requestID = req.params.requestID;
-        const request = await RequestRepo.findOneBy({ requestID });
+        const senderId = req.params.senderId;
+        const sender = await UserRepo.findOne({ where: { id: senderId } });
 
-        if (!request) {
-            return res.status(404).json({ message: 'Request not found' });
+        if (!sender) {
+            return res.status(404).json({ error: 'User not found' });
         }
 
-        await RequestRepo.delete(request.requestID);
-
-        res.status(200).json({
-            message: `Request with ID ${request.requestID} was denied successfully.`,
+        const request = await RequestRepo.findOne({
+            where: {
+                sender: { id: sender.id },
+                receiver: { id: req.user.id },
+            },
         });
+
+        if (!request) {
+            return res.status(404).json({ error: 'The friend request not found.' });
+        }
+
+        await RequestRepo.remove(request);
+
+        res.status(200).json({ message: 'Friend request denied successfully.' });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'An internal server error occurred, please try again.' });
+        res.status(500).json({ error: 'An internal server error occurred, please try again.' });
     }
 };
+
+/**
+ * @swagger
+ * /friend/reject/{senderId}:
+ *   post:
+ *     summary: Deny a friend request
+ *     security:
+ *       - bearerAuth: []
+ *     tags:
+ *       - Friend
+ *     parameters:
+ *       - in: path
+ *         name: senderId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the user who sent the friend request
+ *     responses:
+ *       "200":
+ *         description: Friend request denied successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Friend request denied successfully.
+ *       "404":
+ *         description: User or friend request not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: User or friend request not found.
+ *       "500":
+ *         description: An internal server error occurred, please try again.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: An internal server error occurred, please try again.
+ */

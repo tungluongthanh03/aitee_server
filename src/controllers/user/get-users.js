@@ -14,9 +14,7 @@ export default async (req, res) => {
         const limit = parseInt(req.query.limit);
         const skip = (page - 1) * limit;
 
-        const totalUsers = await UserRepo.count();
-
-        const users = await UserRepo.find({
+        const [users, total] = await UserRepo.findAndCount({
             skip,
             take: limit,
             order: {
@@ -27,10 +25,10 @@ export default async (req, res) => {
             },
         });
 
-        return res.status(200).json({ total: totalUsers, length: users.length, users });
+        return res.status(200).json({ total, users });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'An internal server error occurred, please try again.' });
+        res.status(500).json({ error: 'An internal server error occurred, please try again.' });
     }
 };
 

@@ -14,7 +14,7 @@ export const getPosts = async (req, res) => {
         const limit = parseInt(req.query.limit);
         const skip = (page - 1) * limit;
 
-        let posts = await PostRepo.find({
+        let [posts, total] = await PostRepo.findAndCount({
             take: limit,
             skip,
             order: {
@@ -53,6 +53,7 @@ export const getPosts = async (req, res) => {
 
         return res.status(200).json({
             posts,
+            total,
         });
     } catch (error) {
         console.log(error);

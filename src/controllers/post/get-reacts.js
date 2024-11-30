@@ -24,7 +24,7 @@ export const getReacts = async (req, res) => {
         const limit = parseInt(req.query.limit);
         const skip = (page - 1) * limit;
 
-        let reactions = await ReactRepo.find({
+        let [reactions, total] = await ReactRepo.findAndCount({
             where: {
                 post: { id: post.id },
             },
@@ -49,6 +49,7 @@ export const getReacts = async (req, res) => {
 
         return res.status(200).json({
             reactions,
+            total,
         });
     } catch (error) {
         console.log(error);

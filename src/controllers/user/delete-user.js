@@ -18,7 +18,7 @@ export default async (req, res) => {
         res.status(200).json({ message: 'Your account was deleted successfully.' });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'An internal server error occurred, please try again.' });
+        res.status(500).json({ error: 'An internal server error occurred, please try again.' });
     }
 };
 
