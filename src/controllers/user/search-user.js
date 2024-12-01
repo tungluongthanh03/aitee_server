@@ -1,4 +1,4 @@
-import { UserRepo } from '../../models/index.js';
+import { UserRepo, BlockRepo } from '../../models/index.js';
 import { validateSearchUser } from '../../validators/user.validator.js';
 
 export default async (req, res) => {
@@ -11,9 +11,8 @@ export default async (req, res) => {
         }
 
         const query = req.query.query;
-
-        const page = parseInt(req.query.page);
-        const limit = parseInt(req.query.limit);
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
 
         const terms = query.split(' ');
@@ -24,8 +23,13 @@ export default async (req, res) => {
             .orWhere('user.firstName ILIKE :query', { query: `%${query}%` })
             .orWhere('user.lastName ILIKE :query', { query: `%${query}%` });
 
-        if (terms.length > 1) {
-            queryBuilder.orWhere(
+        if (terms.length === 1) {
+            queryBuilder.where(
+                '(user.firstName ILIKE :term OR user.lastName ILIKE :term OR user.username ILIKE :term)',
+                { term: `%${terms[0]}%` },
+            );
+        } else if (terms.length > 1) {
+            queryBuilder.where(
                 '(user.firstName ILIKE :firstTerm AND user.lastName ILIKE :secondTerm)',
                 {
                     firstTerm: `%${terms[0]}%`,
@@ -41,10 +45,31 @@ export default async (req, res) => {
             );
         }
 
-        queryBuilder.skip(skip).take(limit).orderBy('user.username', 'ASC');
+        queryBuilder
+            .leftJoin(
+                'Block',
+                'block',
+                'block.blockerId = user.id AND block.blockedId = :currentUserId',
+                { currentUserId: req.user.id },
+            )
+            .andWhere('block.blockerId IS NULL')
+            .andWhere('user.id != :currentUserId', { currentUserId: req.user.id })
+            .skip(skip)
+            .take(limit)
+            .orderBy('user.username', 'ASC');
+
         let [users, total] = await queryBuilder.getManyAndCount();
 
-        // Omit user's data
+        // Omit sensitive information
+        users = users.map((user) => ({
+            id: user.id,
+            username: user.username,
+            avatar: user.avatar,
+            firstName: user.firstName,
+            lastName: user.lastName,
+        }));
+
+        // Omit sensitive information
         users = users.map((user) => ({
             id: user.id,
             username: user.username,
@@ -59,7 +84,9 @@ export default async (req, res) => {
         });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'An internal server error occurred, please try again.' });
+        return res.status(500).json({
+            error: 'An internal server error occurred, please try again.',
+        });
     }
 };
 
@@ -106,7 +133,18 @@ export default async (req, res) => {
  *                 users:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/User'
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                       username:
+ *                         type: string
+ *                       avatar:
+ *                         type: string
+ *                       firstName:
+ *                         type: string
+ *                       lastName:
+ *                         type: string
  *       "400":
  *         description: Invalid query parameters.
  *         content:

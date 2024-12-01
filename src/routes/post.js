@@ -20,6 +20,9 @@ import { auth, mediaUpload, checkAdmin } from '../middlewares/index.js';
 
 const router = Router();
 
+// friend routes
+router.get('/:userId/posts', auth, getPostsByUserId);
+
 // User routes
 router.post('/', auth, mediaUpload.array('media', 10), createPost);
 router.put('/:postId', auth, mediaUpload.array('media', 10), updatePost);
@@ -38,7 +41,6 @@ router.delete('/:postId/comment/:commentId', auth, deleteComment);
 router.get('/:postId/comments', auth, listComment);
 
 // Admin routes
-router.get('/:userId/posts', auth, checkAdmin, getPostsByUserId);
 router.delete('/:postId', auth, checkAdmin, deletePost);
 
 export default router;

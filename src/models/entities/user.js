@@ -92,6 +92,18 @@ export const User = new EntitySchema({
             cascade: true,
             inverseSide: 'accepted',
         },
+        blockers: {
+            target: 'Block',
+            type: 'one-to-many',
+            cascade: true,
+            inverseSide: 'blocker',
+        },
+        blockeds: {
+            target: 'Block',
+            type: 'one-to-many',
+            cascade: true,
+            inverseSide: 'blocked',
+        },
         posts: {
             target: 'Post',
             type: 'one-to-many',

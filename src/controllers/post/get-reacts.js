@@ -1,4 +1,4 @@
-import { PostRepo, ReactRepo } from '../../models/index.js';
+import { BlockRepo, PostRepo, ReactRepo } from '../../models/index.js';
 import { validateGetReacts } from '../../validators/post.validator.js';
 
 export const getReacts = async (req, res) => {
@@ -6,6 +6,20 @@ export const getReacts = async (req, res) => {
         const { error } = validateGetReacts(req.query);
         if (error) {
             return res.status(400).json({ error: error.details[0].message });
+        }
+
+        // check if current user is blocked by the post owner
+        const block = await BlockRepo.findOne({
+            where: {
+                blocker: { id: req.params.userId },
+                blocked: { id: req.user.id },
+            },
+        });
+
+        if (block) {
+            return res.status(403).json({
+                error: 'You do not have permission to view reactions for this post.',
+            });
         }
 
         const post = await PostRepo.findOne({

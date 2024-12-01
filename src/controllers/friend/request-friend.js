@@ -1,4 +1,4 @@
-import { UserRepo, FriendRepo, RequestRepo } from '../../models/index.js';
+import { UserRepo, BlockRepo, FriendRepo, RequestRepo } from '../../models/index.js';
 
 export default async (req, res) => {
     try {
@@ -6,6 +6,17 @@ export default async (req, res) => {
 
         if (receiverId === req.user.id) {
             return res.status(400).json({ error: 'You cannot send a friend request to yourself.' });
+        }
+
+        const isBlocked = await BlockRepo.findOne({
+            where: {
+                blocker: { id: receiverId },
+                blocked: { id: req.user.id },
+            },
+        });
+
+        if (isBlocked) {
+            return res.status(400).json({ error: 'You are blocked by the user.' });
         }
 
         const receiver = await UserRepo.findOne({ where: { id: receiverId } });

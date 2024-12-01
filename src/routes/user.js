@@ -9,6 +9,7 @@ import {
     editUser,
     getUsers,
     getUser,
+    getUserById,
     searchUser,
     deleteUser,
     deleteUserById,
@@ -27,11 +28,14 @@ router.post('/forgot-password', auth, forgotPassword);
 router.post('/change-password', auth, changePassword);
 router.put('/', auth, imageUpload.single('avatar'), editUser);
 router.get('/', auth, getUser);
-router.get('/search', auth, searchUser);
 router.delete('/', auth, deleteUser);
 
 // Admin routes
 router.get('/users', auth, checkAdmin, getUsers);
 router.delete('/:id', auth, checkAdmin, deleteUserById);
+
+// friend routes
+router.get('/search', auth, searchUser);
+router.get('/:id', auth, getUserById);
 
 export default router;

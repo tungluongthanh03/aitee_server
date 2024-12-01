@@ -78,6 +78,45 @@ export const Friend = new EntitySchema({
     },
 });
 
+export const Block = new EntitySchema({
+    name: 'Block',
+    tableName: 'blocks',
+    columns: {
+        blockerId: {
+            type: 'uuid',
+            primary: true,
+        },
+        blockedId: {
+            type: 'uuid',
+            primary: true,
+        },
+        createdAt: {
+            type: 'timestamp',
+            default: () => 'CURRENT_TIMESTAMP',
+        },
+    },
+    relations: {
+        blocker: {
+            type: 'many-to-one',
+            target: 'User',
+            joinColumn: {
+                name: 'blockerId',
+            },
+            onDelete: 'CASCADE',
+            inverseSide: 'blockers',
+        },
+        blocked: {
+            type: 'many-to-one',
+            target: 'User',
+            joinColumn: {
+                name: 'blockedId',
+            },
+            onDelete: 'CASCADE',
+            inverseSide: 'blockeds',
+        },
+    },
+});
+
 /**
  * @swagger
  * components:

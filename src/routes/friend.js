@@ -7,6 +7,8 @@ import {
     listFriend,
     listRequest,
     deleteFriend,
+    blockUser,
+    listBlock,
 } from '../controllers/friend/index.js';
 import { auth } from '../middlewares/index.js';
 
@@ -18,5 +20,7 @@ router.post('/reject/:senderId', auth, denyFriend);
 router.delete('/delete-friend/:userId', auth, deleteFriend);
 router.get('/list-friends', auth, listFriend);
 router.get('/list-requests', auth, listRequest);
+router.post('/block/:blockedId', auth, blockUser);
+router.get('/list-blocks', auth, listBlock);
 
 export default router;

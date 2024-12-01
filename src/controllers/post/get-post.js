@@ -2,28 +2,33 @@ import { PostRepo } from '../../models/index.js';
 
 export const getPost = async (req, res) => {
     try {
-        const post = await PostRepo.findOne({
-            where: {
-                id: req.params.postId,
-            },
-            relations: ['reactions', 'comments'],
-        });
+        const post = await PostRepo.createQueryBuilder('post')
+            .leftJoinAndSelect('post.reactions', 'reactions')
+            .leftJoinAndSelect('post.comments', 'comments')
+            .leftJoin(
+                'Block',
+                'block',
+                'block.blockedId = :requestUserId AND block.blockerId = post.userId',
+                { requestUserId: req.user.id },
+            )
+            .where('post.id = :postId', { postId: req.params.postId })
+            .andWhere('block.blockedId IS NULL')
+            .getOne();
 
         if (!post) {
             return res.status(404).json({
-                error: 'Post not found.',
+                error: 'Post not found or you are blocked by the post owner.',
             });
         }
 
-        // update the number of views
+        // Update nViews
         post.nViews += 1;
         await PostRepo.save(post);
 
-        // remove the reactions from the response and add the number of reactions
+        // Format post data
         post.nReactions = post.reactions ? post.reactions.length : 0;
         post.reactions = undefined;
 
-        // remove the comments from the response and add the number of comments
         post.nComments = post.comments ? post.comments.length : 0;
         post.sampleComments = post.comments ? post.comments.slice(0, 3) : [];
         post.comments = undefined;
@@ -32,10 +37,10 @@ export const getPost = async (req, res) => {
             post,
         });
     } catch (error) {
-        console.log(error);
-        return res
-            .status(500)
-            .json({ error: 'An internal server error occurred, please try again.' });
+        console.error(error);
+        return res.status(500).json({
+            error: 'An internal server error occurred, please try again.',
+        });
     }
 };
 

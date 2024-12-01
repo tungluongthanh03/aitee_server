@@ -1,4 +1,4 @@
-import { UserRepo, PostRepo, CommentRepo } from '../../models/index.js';
+import { BlockRepo, PostRepo, CommentRepo } from '../../models/index.js';
 import { validateCreateComment } from '../../validators/comment.validator.js';
 import { uploadMedia } from '../../services/cloudinary/index.js';
 
@@ -13,10 +13,22 @@ export default async (req, res) => {
 
         // check post
         const postId = req.params.postId;
-        const post = await PostRepo.findOneBy({ id: postId });
+        const post = await PostRepo.findOne({ where: { id: postId }, relations: ['user'] });
 
         if (!post) {
             return res.status(404).json({ error: 'Post not found' });
+        }
+
+        // check if current user is blocked by the post owner
+        const block = await BlockRepo.findOneBy({
+            blocker: { id: post.user.id },
+            blocked: { id: req.user.id },
+        });
+
+        if (block) {
+            return res.status(403).json({
+                error: 'You do not have permission to comment on this post.',
+            });
         }
 
         // get root comment

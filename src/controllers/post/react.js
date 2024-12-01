@@ -1,7 +1,21 @@
-import { PostRepo, ReactRepo } from '../../models/index.js';
+import { BlockRepo, PostRepo, ReactRepo } from '../../models/index.js';
 
 export const react = async (req, res) => {
     try {
+        // check if current user is blocked by the post owner
+        const block = await BlockRepo.findOne({
+            where: {
+                blocker: { id: req.params.userId },
+                blocked: { id: req.user.id },
+            },
+        });
+
+        if (block) {
+            return res.status(403).json({
+                error: 'You do not have permission to react to this post.',
+            });
+        }
+
         const post = await PostRepo.findOne({
             where: {
                 id: req.params.postId,

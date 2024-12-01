@@ -14,19 +14,32 @@ export const getPostsByUserId = async (req, res) => {
         const limit = parseInt(req.query.limit);
         const skip = (page - 1) * limit;
 
-        let [posts, total] = await PostRepo.findAndCount({
-            take: limit,
-            skip,
-            order: {
-                createdAt: 'DESC',
-            },
-            where: {
-                user: { id: req.params.userId },
-            },
-            relations: ['reactions'],
-        });
+        const queryBuilder = PostRepo.createQueryBuilder('post');
+        queryBuilder
+            .leftJoin(
+                'Block',
+                'block',
+                'block.blockedId = :currentUserId AND block.blockerId = :postOwnerId',
+                {
+                    currentUserId: req.user.id,
+                    postOwnerId: req.params.userId,
+                },
+            )
+            .where('post.userId = :postOwnerId', { postOwnerId: req.params.userId })
+            .andWhere('block.blockedId IS NULL')
+            .skip(skip)
+            .take(limit)
+            .orderBy('post.createdAt', 'DESC')
+            .leftJoinAndSelect('post.reactions', 'reactions')
+            .leftJoinAndSelect('post.comments', 'comments');
 
-        // don't update the number of views and number of comments because this is admin route
+        let [posts, total] = await queryBuilder.getManyAndCount();
+
+        // update the number of views
+        posts.forEach(async (post) => {
+            post.nViews += 1;
+            await PostRepo.save(post);
+        });
 
         // remove the reactions from the response and add the number of reactions
         posts = posts.map((post) => {
@@ -37,12 +50,22 @@ export const getPostsByUserId = async (req, res) => {
             };
         });
 
+        // remove the comments from the response and add the number of comments
+        posts = posts.map((post) => {
+            return {
+                ...post,
+                nComments: post.comments.length,
+                sampleComments: post.comments.slice(0, 3),
+                comments: undefined,
+            };
+        });
+
         return res.status(200).json({
             posts,
             total,
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return res
             .status(500)
             .json({ error: 'An internal server error occurred, please try again.' });
@@ -57,7 +80,7 @@ export const getPostsByUserId = async (req, res) => {
  *     security:
  *       - bearerAuth: []
  *     tags:
- *       - Admin
+ *       - Post
  *     parameters:
  *       - in: path
  *         name: userId

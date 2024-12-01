@@ -1,4 +1,4 @@
-import { CommentRepo } from '../../models/index.js';
+import { BlockRepo, PostRepo, CommentRepo } from '../../models/index.js';
 import { validateGetComments } from '../../validators/comment.validator.js';
 
 export default async (req, res) => {
@@ -7,6 +7,28 @@ export default async (req, res) => {
         if (error) {
             return res.status(400).json({
                 error: error.details[0].message,
+            });
+        }
+
+        // get post
+        const post = await PostRepo.findOne({
+            where: {
+                id: req.query.postId,
+            },
+            relations: ['user'],
+        });
+
+        // check if current user is blocked by the post owner
+        const block = await BlockRepo.findOne({
+            where: {
+                blocker: { id: post.user.id },
+                blocked: { id: req.user.id },
+            },
+        });
+
+        if (block) {
+            return res.status(403).json({
+                error: 'You do not have permission to view comments for this post.',
             });
         }
 
@@ -21,7 +43,7 @@ export default async (req, res) => {
                 createdAt: 'DESC',
             },
             where: {
-                post: { id: req.query.postId },
+                post: { id: post.id },
             },
         });
 
