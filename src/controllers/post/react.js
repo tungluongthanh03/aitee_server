@@ -88,6 +88,16 @@ export const react = async (req, res) => {
  *                 message:
  *                   type: string
  *                   example: Reaction updated successfully.
+ *       "403":
+ *         description: You do not have permission to react to this post.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: You do not have permission to react to this post.
  *       "404":
  *         description: Post not found.
  *         content:

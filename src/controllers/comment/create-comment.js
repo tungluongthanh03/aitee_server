@@ -125,15 +125,41 @@ export default async (req, res) => {
  *                   type: string
  *                   example: Comment added successfully
  *                 comment:
- *                   $ref: '#/components/schemas/Comment'
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                     content:
+ *                       type: string
+ *                     images:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                     videos:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                     user:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: string
+ *                     post:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: string
+ *                     root:
+ *                       type: object
+ *                       nullable: true
+ *                       properties:
+ *                         id:
+ *                           type: string
  *       "400":
  *         description: Validation error for comment content
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Result'
- *       "404":
- *         description: Post not found
  *         content:
  *           application/json:
  *             schema:
@@ -141,11 +167,35 @@ export default async (req, res) => {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: Post not found
+ *                   example: Validation error for comment content
+ *       "403":
+ *         description: You do not have permission to comment on this post.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: You do not have permission to comment on this post.
+ *       "404":
+ *         description: Post or root comment not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Post or root comment not found
  *       "500":
  *         description: An internal server error occurred, please try again.
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Result'
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: An internal server error occurred, please try again.
  */

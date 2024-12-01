@@ -22,40 +22,79 @@ export default async (req, res) => {
 /**
  * @swagger
  * /user:
- *    get:
- *      summary: Get User Info
- *      security:
- *        - bearerAuth: []
- *      tags:
- *        - User
- *      responses:
- *        "200":
- *          description: The user information has been retrieved successfully.
- *          content:
- *              application/json:
- *                  schema:
- *                      type: object
- *                      properties:
- *                          user:
- *                              $ref: '#/components/schemas/User'
- *        "404":
- *          description: User not found
- *          content:
- *              application/json:
- *                  schema:
- *                      type: object
- *                      properties:
- *                          message:
- *                              type: string
- *                              example: User not found
- *        "500":
- *          description: An internal server error occurred, please try again.
- *          content:
- *              application/json:
- *                  schema:
- *                      type: object
- *                      properties:
- *                          message:
- *                              type: string
- *                              example: An internal server error occurred, please try again.
+ *   get:
+ *     summary: Get User Info
+ *     security:
+ *       - bearerAuth: []
+ *     tags:
+ *       - User
+ *     responses:
+ *       "200":
+ *         description: The user information has been retrieved successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       example: "123e4567-e89b-12d3-a456-426614174000"
+ *                     email:
+ *                       type: string
+ *                       example: "user@example.com"
+ *                     username:
+ *                       type: string
+ *                       example: "username123"
+ *                     phoneNumber:
+ *                       type: string
+ *                       example: "1234567890"
+ *                     firstName:
+ *                       type: string
+ *                       example: "John"
+ *                     lastName:
+ *                       type: string
+ *                       example: "Doe"
+ *                     sex:
+ *                       type: string
+ *                       enum: ["male", "female", "other"]
+ *                       example: "male"
+ *                     birthday:
+ *                       type: string
+ *                       format: date
+ *                       example: "1990-01-01"
+ *                     address:
+ *                       type: string
+ *                       example: "123 Main St"
+ *                     avatar:
+ *                       type: string
+ *                       example: "http://example.com/avatar.jpg"
+ *                     online:
+ *                       type: boolean
+ *                       example: true
+ *                     biography:
+ *                       type: string
+ *                       example: "This is a biography."
+ *       "404":
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "User not found"
+ *       "500":
+ *         description: An internal server error occurred, please try again.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "An internal server error occurred, please try again."
  */

@@ -73,6 +73,16 @@ export default async (req, res) => {
  *                 message:
  *                   type: string
  *                   example: Friend request accepted successfully.
+ *       "400":
+ *         description: You are already friends.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: You are already friends.
  *       "404":
  *         description: User or friend request not found.
  *         content:

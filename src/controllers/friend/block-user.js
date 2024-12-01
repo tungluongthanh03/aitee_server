@@ -75,9 +75,9 @@ export default async (req, res) => {
  *               properties:
  *                 message:
  *                   type: string
- *                   example: User blocked or unblocked successfully.
+ *                   example: User blocked successfully.
  *       "400":
- *         description: You cannot block yourself.
+ *         description: You cannot block yourself or the admin.
  *         content:
  *           application/json:
  *             schema:
@@ -85,7 +85,7 @@ export default async (req, res) => {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: You cannot block yourself.
+ *                   example: You cannot block yourself or the admin.
  *       "404":
  *         description: User not found.
  *         content:

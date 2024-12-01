@@ -35,53 +35,99 @@ export default async (req, res) => {
 /**
  * @swagger
  * /user/users:
- *    get:
- *      summary: Get a list of users
- *      security:
- *        - bearerAuth: []
- *      parameters:
- *        - in: query
- *          name: page
- *          schema:
- *            type: integer
- *            minimum: 1
- *          required: true
- *          description: Page number
- *        - in: query
- *          name: limit
- *          schema:
- *            type: integer
- *            minimum: 1
- *          required: true
- *          description: Number of users per page
- *      tags:
- *        - Admin
- *      responses:
- *        "200":
- *          description: A list of users has been retrieved successfully.
- *          content:
- *              application/json:
- *                  schema:
- *                      type: object
- *                      properties:
- *                          total:
- *                              type: integer
- *                          length:
- *                              type: integer
- *                          users:
- *                              type: array
- *                              items:
- *                                  $ref: '#/components/schemas/User'
- *        "400":
- *          description: Invalid query parameters.
- *          content:
- *              application/json:
- *                  schema:
- *                      $ref: '#/components/schemas/Result'
- *        "500":
- *          description: An internal server error occurred, please try again.
- *          content:
- *              application/json:
- *                  schema:
- *                      $ref: '#/components/schemas/Result'
+ *   get:
+ *     summary: Get a list of users
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         required: true
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         required: true
+ *         description: Number of users per page
+ *     tags:
+ *       - Admin
+ *     responses:
+ *       "200":
+ *         description: A list of users has been retrieved successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 total:
+ *                   type: integer
+ *                   example: 100
+ *                 users:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                         example: "123e4567-e89b-12d3-a456-426614174000"
+ *                       email:
+ *                         type: string
+ *                         example: "user@example.com"
+ *                       username:
+ *                         type: string
+ *                         example: "username123"
+ *                       phoneNumber:
+ *                         type: string
+ *                         example: "1234567890"
+ *                       firstName:
+ *                         type: string
+ *                         example: "John"
+ *                       lastName:
+ *                         type: string
+ *                         example: "Doe"
+ *                       sex:
+ *                         type: string
+ *                         enum: ["male", "female", "other"]
+ *                         example: "male"
+ *                       birthday:
+ *                         type: string
+ *                         format: date
+ *                         example: "1990-01-01"
+ *                       address:
+ *                         type: string
+ *                         example: "123 Main St"
+ *                       avatar:
+ *                         type: string
+ *                         example: "http://example.com/avatar.jpg"
+ *                       online:
+ *                         type: boolean
+ *                         example: true
+ *                       biography:
+ *                         type: string
+ *                         example: "This is a biography."
+ *       "400":
+ *         description: Invalid query parameters.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Invalid query parameters."
+ *       "500":
+ *         description: An internal server error occurred, please try again.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "An internal server error occurred, please try again."
  */

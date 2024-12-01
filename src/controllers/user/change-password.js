@@ -43,48 +43,64 @@ export default async (req, res) => {
 /**
  * @swagger
  * /user/change-password:
- *    post:
- *      summary: Changes the Password
- *      security:
- *        - bearerAuth: []
- *      requestBody:
- *        description: New password
- *        required: true
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                newPassword:
- *                  type: string
- *                  description: The new password
- *              required:
- *                - newPassword
- *      tags:
- *        - User
- *      responses:
- *        "200":
- *          description: Your password was changed successfully.
- *          content:
- *              application/json:
- *                  schema:
- *                      $ref: '#/components/schemas/Result'
- *        "400":
- *          description: Please provide a new password that is longer than 6 letters and shorter than 20 letters.
- *          content:
- *              application/json:
- *                  schema:
- *                      $ref: '#/components/schemas/Result'
- *        "401":
- *          description: Invalid token.
- *          content:
- *              application/json:
- *                  schema:
- *                      $ref: '#/components/schemas/Result'
- *        "500":
- *          description: An internal server error occurred, please try again.
- *          content:
- *              application/json:
- *                  schema:
- *                      $ref: '#/components/schemas/Result'
+ *   post:
+ *     summary: Changes the Password
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       description: New password
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               newPassword:
+ *                 type: string
+ *                 description: The new password
+ *             required:
+ *               - newPassword
+ *     tags:
+ *       - User
+ *     responses:
+ *       "200":
+ *         description: Your password was changed successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Your password was changed successfully.
+ *       "400":
+ *         description: Please provide a new password that is longer than 6 letters and shorter than 20 letters.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Please provide a new password that is longer than 6 letters and shorter than 20 letters.
+ *       "401":
+ *         description: Invalid token.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Invalid token.
+ *       "500":
+ *         description: An internal server error occurred, please try again.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: An internal server error occurred, please try again.
  */

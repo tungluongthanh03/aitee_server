@@ -99,7 +99,7 @@ export default async (req, res) => {
  *         description: The ID of the user to send or remove a friend request
  *     responses:
  *       "200":
- *         description: Request removed successfully.
+ *         description: Request created or removed successfully.
  *         content:
  *           application/json:
  *             schema:
@@ -107,9 +107,9 @@ export default async (req, res) => {
  *               properties:
  *                 message:
  *                   type: string
- *                   example: Request removed successfully.
+ *                   example: Request created successfully.
  *       "400":
- *         description: The user has already sent you a friend request.
+ *         description: Bad request.
  *         content:
  *           application/json:
  *             schema:
@@ -117,7 +117,7 @@ export default async (req, res) => {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: The user has already sent you a friend request.
+ *                   example: You cannot send a friend request to yourself.
  *       "404":
  *         description: User not found.
  *         content:
