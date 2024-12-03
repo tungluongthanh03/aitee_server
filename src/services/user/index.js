@@ -32,9 +32,9 @@ export const getFriendList = async (userId) => {
     try {
         const list = await UserRepo.query(
             `SELECT 
-                u.ID AS friendID,
-                u.username,
-                u.avatar
+                u.ID AS "targetId",
+                u.username AS "targetName",
+                u.avatar AS "targetAvatar"
             FROM 
                 is_friend f
             JOIN 

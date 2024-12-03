@@ -4,28 +4,71 @@ export default async (req, res) => {
     const currentUserId = req.user.id; // Assuming you're getting the current user's ID from a session or token
     
     const query = `
-            SELECT DISTINCT ON (LEAST(m."sendFrom", m."sendToUser"), GREATEST(m."sendFrom", m."sendToUser"))
-    u."id" AS "userId",
-    u."username",
-    u."avatar",
-    m."content" AS "lastMessage",
-    m."createdAt"
-FROM "message" m
-JOIN "user" u
-    ON u."id" = CASE
-                   WHEN m."sendFrom" = $1 THEN m."sendToUser"
-                   ELSE m."sendFrom"
-                END
-WHERE m."sendFrom" = $1 OR m."sendToUser" = $1
-ORDER BY LEAST(m."sendFrom", m."sendToUser"),
-         GREATEST(m."sendFrom", m."sendToUser"),
-         m."createdAt" DESC;
+    WITH LatestMessages AS (
+    SELECT DISTINCT ON (
+        CASE 
+            WHEN m."sendToGroupChat" IS NOT NULL THEN m."sendToGroupChat"
+            ELSE LEAST(m."sendFrom", m."sendToUser")
+        END,
+        CASE 
+            WHEN m."sendToGroupChat" IS NOT NULL THEN m."sendToGroupChat"
+            ELSE GREATEST(m."sendFrom", m."sendToUser")
+        END
+    )
+        m."messageID",
+        CASE 
+            WHEN m."sendToGroupChat" IS NOT NULL THEN 'group'
+            ELSE 'user'
+        END AS "targetType",
+        CASE 
+            WHEN m."sendToGroupChat" IS NOT NULL THEN m."sendToGroupChat"
+            ELSE u."id"
+        END AS "targetId",
+        CASE 
+            WHEN m."sendToGroupChat" IS NOT NULL THEN g."name"
+            ELSE u."username"
+        END AS "targetName",
+        CASE 
+            WHEN m."sendToGroupChat" IS NOT NULL THEN g."avatar"
+            ELSE u."avatar"
+        END AS "targetAvatar",
+        m."content" AS "lastMessage",
+        m."createdAt"
+    FROM "message" m
+    LEFT JOIN "user" u 
+        ON u."id" = CASE 
+                    WHEN m."sendFrom" = $1 THEN m."sendToUser"
+                    ELSE m."sendFrom"
+                   END
+    LEFT JOIN "group_chat" g 
+        ON g."groupID" = m."sendToGroupChat"
+    WHERE m."sendFrom" = $1 
+       OR m."sendToUser" = $1 
+       OR m."sendToGroupChat" IN (
+           SELECT gcu."groupID"
+           FROM "groupChat_user" gcu
+           WHERE gcu."userID" = $1
+       )
+    ORDER BY 
+        CASE 
+            WHEN m."sendToGroupChat" IS NOT NULL THEN m."sendToGroupChat"
+            ELSE LEAST(m."sendFrom", m."sendToUser")
+        END,
+        CASE 
+            WHEN m."sendToGroupChat" IS NOT NULL THEN m."sendToGroupChat"
+            ELSE GREATEST(m."sendFrom", m."sendToUser")
+        END,
+        m."createdAt" DESC
+)
+SELECT *
+FROM LatestMessages
+ORDER BY "createdAt" DESC;
 
-        `;
+`;
+
 
     try {
         const conversations = await MessageRepo.query(query, [currentUserId]);
-
         return res.status(200).json({
             success: true,
             conversations,

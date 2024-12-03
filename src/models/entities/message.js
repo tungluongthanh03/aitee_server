@@ -23,11 +23,6 @@ export const Message = new EntitySchema({
             type: 'simple-array',   // Can store video URLs as array
             nullable: true,
         },
-        status: {
-            type: 'varchar',
-            length: 50,
-            nullable: false,
-        },
     },
     relations: {
         sendFrom: {
