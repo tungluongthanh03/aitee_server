@@ -121,6 +121,15 @@ export const User = new EntitySchema({
             cascade: true,
             inverseSide: 'user',
         },
+        has: {
+            type: 'many-to-many',
+            target: 'GroupChat',  // Reference to the User entity
+            joinTable: {
+                name: 'groupChat_user',
+                joinColumn: { name: 'userID', referencedColumnName: 'id' },
+                inverseJoinColumn: { name: 'groupID', referencedColumnName: 'groupID' },
+            },
+        },
     },
 });
 
