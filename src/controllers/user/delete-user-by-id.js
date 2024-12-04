@@ -28,7 +28,7 @@ export default async (req, res) => {
  *   delete:
  *     summary: Delete a user by ID
  *     security:
- *        - bearerAuth: []
+ *       - bearerAuth: []
  *     description: Deletes a user from the database by their ID.
  *     tags:
  *       - Admin
@@ -40,7 +40,7 @@ export default async (req, res) => {
  *           type: string
  *         description: The ID of the user to delete
  *     responses:
- *       200:
+ *       "200":
  *         description: User deleted successfully
  *         content:
  *           application/json:
@@ -50,7 +50,7 @@ export default async (req, res) => {
  *                 message:
  *                   type: string
  *                   example: User with id {id} was deleted successfully.
- *       404:
+ *       "404":
  *         description: User not found
  *         content:
  *           application/json:
@@ -60,7 +60,7 @@ export default async (req, res) => {
  *                 message:
  *                   type: string
  *                   example: User not found
- *       500:
+ *       "500":
  *         description: Internal server error
  *         content:
  *           application/json:

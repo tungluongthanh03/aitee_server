@@ -83,26 +83,37 @@ export default async (req, res) => {
  *                         properties:
  *                           id:
  *                             type: string
- *                           username:
- *                             type: string
- *                           avatar:
- *                             type: string
+ *                             example: "123e4567-e89b-12d3-a456-426614174000"
  *                           firstName:
  *                             type: string
+ *                             example: "John"
  *                           lastName:
  *                             type: string
+ *                             example: "Doe"
+ *                           profilePicture:
+ *                             type: string
+ *                             example: "http://example.com/avatar.jpg"
  *                 total:
  *                   type: integer
+ *                   example: 10
  *       "400":
  *         description: Invalid query parameters.
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Result'
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Invalid query parameters.
  *       "500":
  *         description: An internal server error occurred, please try again.
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Result'
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: An internal server error occurred, please try again.
  */

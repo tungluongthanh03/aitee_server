@@ -1,4 +1,4 @@
-import { PostRepo, ReactRepo } from '../../models/index.js';
+import { PostRepo } from '../../models/index.js';
 import { deleteMedia } from '../../services/cloudinary/index.js';
 
 export const deletePost = async (req, res) => {

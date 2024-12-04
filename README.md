@@ -64,9 +64,15 @@ API documentation is available at `http://localhost:3000/api/api-docs`.
 ## Project Structure
 
 ```
+.DS_Store
 .env
 .gitignore
 .prettierrc
+.vscode/
+    launch.json
+    settings.json
+certs/
+    ca.pem
 package.json
 README.md
 src/
@@ -93,13 +99,13 @@ src/
         entities/
         index.js
     routes/
-        comment.js
         friend.js
         index.js
         post.js
         user.js
     services/
         auth/
-        ...
+        cloudinary/
     validators/
+        ...
 ```

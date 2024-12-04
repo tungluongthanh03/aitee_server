@@ -106,7 +106,7 @@ export default async (req, res) => {
  *             schema:
  *               type: object
  *               properties:
- *                 message:
+ *                 error:
  *                   type: string
  *                   example: An internal server error occurred, please try again.
  */

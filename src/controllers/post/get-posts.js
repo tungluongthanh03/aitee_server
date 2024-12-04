@@ -102,42 +102,73 @@ export const getPosts = async (req, res) => {
  *                     properties:
  *                       id:
  *                         type: string
+ *                         example: "123e4567-e89b-12d3-a456-426614174000"
  *                       content:
  *                         type: string
+ *                         example: "This is a sample post content."
  *                       images:
  *                         type: array
  *                         items:
  *                           type: string
+ *                           example: "http://example.com/image.jpg"
  *                       videos:
  *                         type: array
  *                         items:
  *                           type: string
+ *                           example: "http://example.com/video.mp4"
  *                       nViews:
  *                         type: integer
+ *                         example: 100
  *                       nReactions:
  *                         type: integer
+ *                         example: 10
  *                       nComments:
  *                         type: integer
+ *                         example: 5
  *                       sampleComments:
  *                         type: array
  *                         items:
- *                           $ref: '#/components/schemas/Comment'
+ *                           type: object
+ *                           properties:
+ *                             id:
+ *                               type: string
+ *                               example: "123e4567-e89b-12d3-a456-426614174001"
+ *                             content:
+ *                               type: string
+ *                               example: "This is a sample comment."
+ *                             createdAt:
+ *                               type: string
+ *                               format: date-time
+ *                               example: "2023-01-01T00:00:00Z"
  *                       createdAt:
  *                         type: string
  *                         format: date-time
+ *                         example: "2023-01-01T00:00:00Z"
  *                       updatedAt:
  *                         type: string
  *                         format: date-time
+ *                         example: "2023-01-01T00:00:00Z"
+ *                 total:
+ *                   type: integer
+ *                   example: 10
  *       "400":
  *         description: Invalid query parameters.
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Result'
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Invalid query parameters."
  *       "500":
  *         description: An internal server error occurred, please try again.
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Result'
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "An internal server error occurred, please try again."
  */

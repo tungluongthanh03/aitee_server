@@ -79,17 +79,55 @@ export const createPost = async (req, res) => {
  *                              type: string
  *                              example: Post created successfully.
  *                          post:
- *                              $ref: '#/components/schemas/Post'
+ *                              type: object
+ *                              properties:
+ *                                id:
+ *                                  type: string
+ *                                content:
+ *                                  type: string
+ *                                images:
+ *                                  type: array
+ *                                  items:
+ *                                    type: string
+ *                                videos:
+ *                                  type: array
+ *                                  items:
+ *                                    type: string
+ *                                nViews:
+ *                                  type: integer
+ *                                  example: 0
+ *                                nReactions:
+ *                                  type: integer
+ *                                  example: 0
+ *                                createdAt:
+ *                                  type: string
+ *                                  format: date-time
+ *                                updatedAt:
+ *                                  type: string
+ *                                  format: date-time
+ *                                user:
+ *                                  type: object
+ *                                  properties:
+ *                                    id:
+ *                                      type: string
  *        "400":
  *          description: Validation error for post content
  *          content:
  *              application/json:
  *                  schema:
- *                      $ref: '#/components/schemas/Result'
+ *                      type: object
+ *                      properties:
+ *                        error:
+ *                          type: string
+ *                          example: Validation error for post content
  *        "500":
  *          description: An internal server error occurred, please try again.
  *          content:
  *              application/json:
  *                  schema:
- *                      $ref: '#/components/schemas/Result'
+ *                      type: object
+ *                      properties:
+ *                        error:
+ *                          type: string
+ *                          example: An internal server error occurred, please try again.
  */

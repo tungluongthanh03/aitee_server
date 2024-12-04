@@ -153,4 +153,20 @@ export const Block = new EntitySchema({
  *           $ref: '#/components/schemas/User'
  *         receiver:
  *           $ref: '#/components/schemas/User'
+ *     Block:
+ *       type: object
+ *       properties:
+ *         blockerId:
+ *           type: string
+ *           format: uuid
+ *         blockedId:
+ *           type: string
+ *           format: uuid
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *         blocker:
+ *           $ref: '#/components/schemas/User'
+ *         blocked:
+ *           $ref: '#/components/schemas/User'
  */

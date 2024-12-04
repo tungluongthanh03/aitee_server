@@ -129,19 +129,53 @@ export default async (req, res) => {
  *                   type: string
  *                   example: Comment with ID {commentId} was updated successfully.
  *                 comment:
- *                   $ref: '#/components/schemas/Comment'
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                     content:
+ *                       type: string
+ *                     images:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                     videos:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                     user:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: string
+ *                     post:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: string
  *       "400":
  *         description: Validation error for comment content.
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Result'
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Validation error for comment content.
  *       "403":
  *         description: You are not authorized to update this comment.
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Result'
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: You are not authorized to update this comment.
  *       "404":
  *         description: Comment not found.
  *         content:
@@ -157,5 +191,10 @@ export default async (req, res) => {
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Result'
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: An internal server error occurred, please try again.
  */
+

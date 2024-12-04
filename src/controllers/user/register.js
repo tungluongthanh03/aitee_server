@@ -74,60 +74,108 @@ export default async (req, res) => {
 /**
  * @swagger
  * /user:
- *    post:
- *      summary: Registers the user
- *      requestBody:
- *        description: All required information about the user
- *        required: true
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                email:
- *                  type: string
- *                password:
- *                  type: string
- *                firstName:
- *                  type: string
- *                lastName:
- *                  type: string
- *                phoneNumber:
- *                  type: string
- *                sex:
- *                  type: string
- *                  enum: ['male', 'female', 'other']
- *                birthday:
- *                  type: string
- *                  format: date
- *      tags:
- *        - User
- *      responses:
- *        "200":
- *          description: You registered successfully.
- *          content:
- *              application/json:
- *                  schema:
- *                      type: object
- *                      properties:
- *                          resultMessage:
- *                              $ref: '#/components/schemas/ResultMessage'
- *                          resultCode:
- *                              $ref: '#/components/schemas/ResultCode'
- *                          user:
- *                              $ref: '#/components/schemas/User'
- *                          confirmToken:
- *                              type: string
- *        "400":
- *          description: Please provide all the required fields!
- *          content:
- *              application/json:
- *                  schema:
- *                      $ref: '#/components/schemas/Result'
- *        "500":
- *          description: An internal server error occurred, please try again.
- *          content:
- *              application/json:
- *                  schema:
- *                      $ref: '#/components/schemas/Result'
+ *   post:
+ *     summary: Registers the user
+ *     requestBody:
+ *       description: All required information about the user
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               firstName:
+ *                 type: string
+ *               lastName:
+ *                 type: string
+ *               phoneNumber:
+ *                 type: string
+ *               sex:
+ *                 type: string
+ *                 enum: ['male', 'female', 'other']
+ *               birthday:
+ *                 type: string
+ *                 format: date
+ *     tags:
+ *       - User
+ *     responses:
+ *       "200":
+ *         description: You registered successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: You registered successfully.
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       example: "123e4567-e89b-12d3-a456-426614174000"
+ *                     email:
+ *                       type: string
+ *                       example: "user@example.com"
+ *                     username:
+ *                       type: string
+ *                       example: "username123"
+ *                     phoneNumber:
+ *                       type: string
+ *                       example: "1234567890"
+ *                     firstName:
+ *                       type: string
+ *                       example: "John"
+ *                     lastName:
+ *                       type: string
+ *                       example: "Doe"
+ *                     sex:
+ *                       type: string
+ *                       enum: ["male", "female", "other"]
+ *                       example: "male"
+ *                     birthday:
+ *                       type: string
+ *                       format: date
+ *                       example: "1990-01-01"
+ *                 accessToken:
+ *                   type: string
+ *                   example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *                 refreshToken:
+ *                   type: string
+ *                   example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *       "400":
+ *         description: Please provide all the required fields!
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Please provide all the required fields!
+ *       "409":
+ *         description: User already exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: User already exists
+ *       "500":
+ *         description: An internal server error occurred, please try again.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: An internal server error occurred, please try again.
  */

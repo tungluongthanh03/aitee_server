@@ -56,7 +56,46 @@ export default async (req, res) => {
  *               type: object
  *               properties:
  *                 user:
- *                   $ref: '#/components/schemas/User'
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       example: "123e4567-e89b-12d3-a456-426614174000"
+ *                     email:
+ *                       type: string
+ *                       example: "user@example.com"
+ *                     username:
+ *                       type: string
+ *                       example: "username123"
+ *                     phoneNumber:
+ *                       type: string
+ *                       example: "1234567890"
+ *                     firstName:
+ *                       type: string
+ *                       example: "John"
+ *                     lastName:
+ *                       type: string
+ *                       example: "Doe"
+ *                     sex:
+ *                       type: string
+ *                       enum: ["male", "female", "other"]
+ *                       example: "male"
+ *                     birthday:
+ *                       type: string
+ *                       format: date
+ *                       example: "1990-01-01"
+ *                     address:
+ *                       type: string
+ *                       example: "123 Main St"
+ *                     avatar:
+ *                       type: string
+ *                       example: "http://example.com/avatar.jpg"
+ *                     online:
+ *                       type: boolean
+ *                       example: true
+ *                     biography:
+ *                       type: string
+ *                       example: "This is a biography."
  *       "403":
  *         description: You do not have permission to view this user.
  *         content:
@@ -66,7 +105,7 @@ export default async (req, res) => {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: You do not have permission to view this user.
+ *                   example: "You do not have permission to view this user."
  *       "404":
  *         description: User not found.
  *         content:
@@ -76,7 +115,7 @@ export default async (req, res) => {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: User not found.
+ *                   example: "User not found."
  *       "500":
  *         description: An internal server error occurred, please try again.
  *         content:
@@ -86,5 +125,5 @@ export default async (req, res) => {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: An internal server error occurred, please try again.
+ *                   example: "An internal server error occurred, please try again."
  */
