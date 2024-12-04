@@ -10,7 +10,7 @@ export default {
         },
         servers: [
             {
-                url: 'http://localhost:3000/api/',
+                url: 'https://lemur-primary-vastly.ngrok-free.app/api/',
             },
         ],
         components: {
