@@ -6,6 +6,7 @@ import { specs, swaggerConfig } from '../config/index.js';
 import user from './user.js';
 import friend from './friend.js';
 import post from './post.js';
+import report from './report.js';
 import chat from './chat.js';
 
 const router = Router();
@@ -19,6 +20,7 @@ router.get(specs, setup(specDoc, { explorer: true }));
 router.use('/user', user);
 router.use('/friend', friend);
 router.use('/post', post);
+router.use('/report', report);
 router.use('/chat', chat);
 
 export default router;
