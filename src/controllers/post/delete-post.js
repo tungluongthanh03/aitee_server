@@ -1,5 +1,6 @@
 import { PostRepo } from '../../models/index.js';
 import { deleteMedia } from '../../services/cloudinary/index.js';
+import { NotificationRepo } from '../../models/index.js';
 
 export const deletePost = async (req, res) => {
     try {
@@ -35,6 +36,24 @@ export const deletePost = async (req, res) => {
         }
 
         await PostRepo.remove(post);
+
+        // remove all react and comment notifications
+        const query = `
+            DELETE FROM "notifications"
+            WHERE EXISTS (
+                SELECT 1
+                FROM "comment_notifications"
+                WHERE "notifications"."id" = "comment_notifications"."notificationId"
+                AND "comment_notifications"."postId" = '${req.params.postId}'
+            )
+            OR EXISTS (
+                SELECT 1
+                FROM "react_notifications"
+                WHERE "notifications"."id" = "react_notifications"."notificationId"
+                AND "react_notifications"."postId" = '${req.params.postId}'
+            )
+        `;
+        await NotificationRepo.query(query);
 
         return res.status(200).json({
             message: 'Post deleted successfully.',

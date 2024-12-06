@@ -13,7 +13,6 @@ export const initializeSocket = (io) => {
             console.log(groups);
             groups.forEach((group) => {
                 socket.join(group.groupID);
-                
             });
         });
 
@@ -37,10 +36,9 @@ export const initializeSocket = (io) => {
                     } else {
                         console.log(`User ${sendToUser} is offline.`);
                     }
-                }
-                else {
-                    io.to(sendToGroupChat).emit("receivedMessageGroup", receivedMessage)
-                    console.log("emit successfully");
+                } else {
+                    io.to(sendToGroupChat).emit('receivedMessageGroup', receivedMessage);
+                    console.log('emit successfully');
                 }
 
                 // Optionally, notify the sendFrom about the delivery status
