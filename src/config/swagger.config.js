@@ -12,6 +12,9 @@ export default {
             {
                 url: 'https://lemur-primary-vastly.ngrok-free.app/api/',
             },
+            {
+                url: `http://localhost:${process.env.PORT || 3000}/api/`,
+            },
         ],
         components: {
             securitySchemes: {

@@ -1,4 +1,5 @@
 import { UserRepo, RequestRepo } from '../../models/index.js';
+import { removeFriendNotification } from '../../services/notification/index.js';
 
 export default async (req, res) => {
     try {
@@ -21,6 +22,7 @@ export default async (req, res) => {
         }
 
         await RequestRepo.remove(request);
+        await removeFriendNotification(req.user, sender.id, 'request');
 
         res.status(200).json({ message: 'Friend request denied successfully.' });
     } catch (error) {

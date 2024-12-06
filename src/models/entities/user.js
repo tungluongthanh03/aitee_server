@@ -123,12 +123,18 @@ export const User = new EntitySchema({
         },
         has: {
             type: 'many-to-many',
-            target: 'GroupChat',  // Reference to the User entity
+            target: 'GroupChat', // Reference to the User entity
             joinTable: {
                 name: 'groupChat_user',
                 joinColumn: { name: 'userID', referencedColumnName: 'id' },
                 inverseJoinColumn: { name: 'groupID', referencedColumnName: 'groupID' },
             },
+        },
+        notifications: {
+            target: 'Notification',
+            type: 'one-to-many',
+            cascade: true,
+            inverseSide: 'user',
         },
     },
 });

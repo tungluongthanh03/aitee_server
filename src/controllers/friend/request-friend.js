@@ -1,4 +1,8 @@
 import { UserRepo, BlockRepo, FriendRepo, RequestRepo } from '../../models/index.js';
+import {
+    createFriendNotification,
+    removeFriendNotification,
+} from '../../services/notification/index.js';
 
 export default async (req, res) => {
     try {
@@ -59,6 +63,7 @@ export default async (req, res) => {
 
         if (request) {
             await RequestRepo.remove(request);
+            await removeFriendNotification(receiver, req.user.id, 'request');
 
             return res.status(200).json({
                 message: 'Request removed successfully.',
@@ -71,6 +76,7 @@ export default async (req, res) => {
         });
 
         await RequestRepo.save(request);
+        await createFriendNotification(receiver, req.user.id, 'request');
 
         res.status(200).json({
             message: 'Request created successfully',

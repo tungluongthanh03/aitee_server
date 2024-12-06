@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import { validateRegister } from '../../validators/user.validator.js';
 import { signAccessToken, signRefreshToken } from '../../services/auth/index.js';
 import { UserRepo } from '../../models/index.js';
+import { createSystemNotification } from '../../services/notification/index.js';
 
 const { hash } = bcrypt;
 const salt = 10;
@@ -56,6 +57,22 @@ export default async (req, res) => {
 
         // remove password from user object
         user.password = undefined;
+
+        // create system notification
+        const formattedDate = new Date().toLocaleString('vi-VN', {
+            hour: '2-digit',
+            minute: '2-digit',
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+        });
+
+        const userAgent = req.headers['user-agent'];
+
+        await createSystemNotification(
+            user,
+            'Your account was created at ' + formattedDate + ' using ' + userAgent,
+        );
 
         return res.status(200).json({
             message: 'You registered successfully.',
