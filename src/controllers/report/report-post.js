@@ -95,7 +95,7 @@ export const reportPost = async (req, res) => {
  * /report/{postId}:
  *    post:
  *      summary: Report a post
- *      description: Report a specific post. Conditions apply: users cannot report their own posts and can only report posts from their friends.
+ *      description: "Report a specific post. Conditions apply: users cannot report their own posts and can only report posts from their friends."
  *      security:
  *        - bearerAuth: []
  *      parameters:

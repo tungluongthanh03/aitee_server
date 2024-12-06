@@ -165,13 +165,93 @@ export const ReportPostDetail = new EntitySchema({
             target: 'User',
             type: 'many-to-one',
             joinColumn: 'reporterId',
-            onDelte: 'CASCADE',
+            onDelete: 'CASCADE',
         },
         post: {
             target: 'Post',
             type: 'many-to-one',
             joinColumn: 'postId',
-            onDelte: 'CASCADE',
+            onDelete: 'CASCADE',
         },
     },
 });
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Notification:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           format: uuid
+ *         status:
+ *           type: boolean
+ *           default: false
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *         user:
+ *           $ref: '#/components/schemas/User'
+ *         reactNotification:
+ *           $ref: '#/components/schemas/ReactNotification'
+ *         commentNotification:
+ *           $ref: '#/components/schemas/CommentNotification'
+ *         friendNotification:
+ *           $ref: '#/components/schemas/FriendNotification'
+ *         systemNotification:
+ *           $ref: '#/components/schemas/SystemNotification'
+ *     ReactNotification:
+ *       type: object
+ *       properties:
+ *         notificationId:
+ *           type: string
+ *           format: uuid
+ *         reactorId:
+ *           type: string
+ *           format: uuid
+ *         postId:
+ *           type: string
+ *           format: uuid
+ *         notification:
+ *           $ref: '#/components/schemas/Notification'
+ *     CommentNotification:
+ *       type: object
+ *       properties:
+ *         notificationId:
+ *           type: string
+ *           format: uuid
+ *         commenterId:
+ *           type: string
+ *           format: uuid
+ *         postId:
+ *           type: string
+ *           format: uuid
+ *         notification:
+ *           $ref: '#/components/schemas/Notification'
+ *     FriendNotification:
+ *       type: object
+ *       properties:
+ *         notificationId:
+ *           type: string
+ *           format: uuid
+ *         senderId:
+ *           type: string
+ *           format: uuid
+ *         receiverId:
+ *           type: string
+ *           format: uuid
+ *         notification:
+ *           $ref: '#/components/schemas/Notification'
+ *     SystemNotification:
+ *       type: object
+ *       properties:
+ *         notificationId:
+ *           type: string
+ *           format: uuid
+ *         message:
+ *           type: string
+ *         notification:
+ *           $ref: '#/components/schemas/Notification'
+ */

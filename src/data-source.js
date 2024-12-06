@@ -15,8 +15,8 @@ export const AppDataSource = new DataSource({
     synchronize: true,
     logging: true,
     connectTimeout: 10000,
-    // ssl: {
-    //     rejectUnauthorized: true,
-    //     // ca: readFileSync('certs/ca.pem').toString(),
-    // },
+    ssl: {
+        rejectUnauthorized: true,
+        ca: readFileSync('certs/ca.pem').toString(),
+    },
 });

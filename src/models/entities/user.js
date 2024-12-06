@@ -216,4 +216,20 @@ export const User = new EntitySchema({
  *           type: array
  *           items:
  *             $ref: '#/components/schemas/Friend'
+ *         blockers:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Block'
+ *         blockeds:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Block'
+ *         has:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/GroupChat'
+ *         notifications:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Notification'
  */
