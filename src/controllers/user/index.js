@@ -8,6 +8,7 @@ export { default as editUser } from './edit-user.js';
 
 export { default as getUsers } from './get-users.js';
 export { default as getUser } from './get-user.js';
+export { default as getBasicUserInfo } from './get-basic-info.js';
 export { default as getUserById } from './get-user-by-id.js';
 export { default as searchUser } from './search-user.js';
 export { default as deleteUser } from './delete-user.js';
