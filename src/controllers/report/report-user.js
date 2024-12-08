@@ -85,7 +85,7 @@ export const reportUser = async (req, res) => {
 
 /**
  * @swagger
- * /report/{reportedId}:
+ * /report/user/{reportedId}:
  *    post:
  *      summary: Report a user
  *      security:
