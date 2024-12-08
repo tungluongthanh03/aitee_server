@@ -28,8 +28,8 @@ router.post('/refresh-token', refreshToken);
 router.post('/forgot-password', auth, forgotPassword);
 router.post('/change-password', auth, changePassword);
 router.put('/', auth, imageUpload.single('avatar'), editUser);
-router.get('/', auth, getUser);
 router.get('/basic-info/:id', auth, getBasicUserInfo);
+router.get('/', auth, getUser);
 router.delete('/', auth, deleteUser);
 
 // Admin routes
