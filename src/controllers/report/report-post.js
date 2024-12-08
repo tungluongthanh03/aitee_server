@@ -92,7 +92,7 @@ export const reportPost = async (req, res) => {
 
 /**
  * @swagger
- * /report/{postId}:
+ * /report/post/{postId}:
  *    post:
  *      summary: Report a post
  *      description: "Report a specific post. Conditions apply: users cannot report their own posts and can only report posts from their friends."
