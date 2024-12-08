@@ -24,7 +24,7 @@ router.put('/irnore-report-user/:reportId', auth, checkAdmin, ignoreReportUser);
 router.delete('/accept-report-post/:reportId', auth, checkAdmin, acceptReportPost);
 router.delete('/accept-report-user/:reportId', auth, checkAdmin, acceptReportUser);
 
-router.post('/:reportedId', auth, reportUser);
-router.post('/:postId', auth, reportPost);
+router.post('/user/:reportedId', auth, reportUser);
+router.post('/post/:postId', auth, reportPost);
 
 export default router;
