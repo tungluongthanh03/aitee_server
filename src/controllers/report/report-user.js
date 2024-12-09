@@ -70,6 +70,7 @@ export const reportUser = async (req, res) => {
         if (!report) {
             report = await ReportUserRepo.create({
                 reportedId: reported.id,
+                report.canRequestAdmin = true;
             });
         }
 
