@@ -31,7 +31,8 @@ export const ReportUser = new EntitySchema({
         },
         canRequestAdmin: {
             type: 'boolean',
-            default: false,
+            // default: false,
+            default: true,
         },
     },
     relations: {
