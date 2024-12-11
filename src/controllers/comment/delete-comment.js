@@ -1,12 +1,13 @@
 import { CommentRepo } from '../../models/index.js';
 import { deleteMedia } from '../../services/cloudinary/index.js';
+import { removeCommentNotification } from '../../services/notification/index.js';
 
 export default async (req, res) => {
     try {
         const commentID = req.params.commentId;
         const comment = await CommentRepo.findOne({
             where: { id: commentID },
-            relations: ['post', 'user'],
+            relations: ['post', 'post.user', 'user'],
         });
 
         if (!comment) {
@@ -38,6 +39,7 @@ export default async (req, res) => {
         }
 
         await CommentRepo.remove(comment);
+        await removeCommentNotification(comment.post.user, comment.user.id, comment.post.id);
 
         res.status(200).json({ message: `Comment with ID ${commentID} was deleted successfully.` });
     } catch (error) {

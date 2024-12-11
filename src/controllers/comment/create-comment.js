@@ -1,6 +1,7 @@
 import { BlockRepo, PostRepo, CommentRepo } from '../../models/index.js';
 import { validateCreateComment } from '../../validators/comment.validator.js';
 import { uploadMedia } from '../../services/cloudinary/index.js';
+import { createCommentNotification } from '../../services/notification/index.js';
 
 export default async (req, res) => {
     try {
@@ -60,6 +61,7 @@ export default async (req, res) => {
         }
 
         await CommentRepo.save(comment);
+        await createCommentNotification(post.user, req.user.id, post.id);
 
         comment.post = { id: post.id };
         comment.user = { id: req.user.id };
@@ -129,35 +131,43 @@ export default async (req, res) => {
  *                   properties:
  *                     id:
  *                       type: string
+ *                       example: "123e4567-e89b-12d3-a456-426614174000"
  *                     content:
  *                       type: string
+ *                       example: "This is a sample comment."
  *                     images:
  *                       type: array
  *                       items:
  *                         type: string
+ *                         example: "http://example.com/image.jpg"
  *                     videos:
  *                       type: array
  *                       items:
  *                         type: string
+ *                         example: "http://example.com/video.mp4"
  *                     createdAt:
  *                       type: string
  *                       format: date-time
+ *                       example: "2023-01-01T00:00:00Z"
  *                     user:
  *                       type: object
  *                       properties:
  *                         id:
  *                           type: string
+ *                           example: "123e4567-e89b-12d3-a456-426614174000"
  *                     post:
  *                       type: object
  *                       properties:
  *                         id:
  *                           type: string
+ *                           example: "123e4567-e89b-12d3-a456-426614174000"
  *                     root:
  *                       type: object
  *                       nullable: true
  *                       properties:
  *                         id:
  *                           type: string
+ *                           example: "123e4567-e89b-12d3-a456-426614174001"
  *       "400":
  *         description: Validation error for comment content
  *         content:
@@ -167,7 +177,7 @@ export default async (req, res) => {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: Validation error for comment content
+ *                   example: "Validation error for comment content"
  *       "403":
  *         description: You do not have permission to comment on this post.
  *         content:
@@ -177,7 +187,7 @@ export default async (req, res) => {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: You do not have permission to comment on this post.
+ *                   example: "You do not have permission to comment on this post."
  *       "404":
  *         description: Post or root comment not found
  *         content:
@@ -187,7 +197,7 @@ export default async (req, res) => {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: Post or root comment not found
+ *                   example: "Post or root comment not found"
  *       "500":
  *         description: An internal server error occurred, please try again.
  *         content:
@@ -197,5 +207,5 @@ export default async (req, res) => {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: An internal server error occurred, please try again.
+ *                   example: "An internal server error occurred, please try again."
  */

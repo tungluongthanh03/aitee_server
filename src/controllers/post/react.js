@@ -1,4 +1,8 @@
 import { BlockRepo, PostRepo, ReactRepo } from '../../models/index.js';
+import {
+    createReactNotification,
+    removeReactNotification,
+} from '../../services/notification/index.js';
 
 export const react = async (req, res) => {
     try {
@@ -20,6 +24,7 @@ export const react = async (req, res) => {
             where: {
                 id: req.params.postId,
             },
+            relations: ['user'],
         });
 
         if (!post) {
@@ -37,6 +42,7 @@ export const react = async (req, res) => {
 
         if (reaction) {
             await ReactRepo.remove(reaction);
+            await removeReactNotification(post.user, req.user.id, post.id);
 
             return res.status(200).json({
                 message: 'Reaction removed successfully.',
@@ -49,9 +55,10 @@ export const react = async (req, res) => {
         });
 
         await ReactRepo.save(react);
+        await createReactNotification(post.user, req.user.id, post.id);
 
         return res.status(200).json({
-            message: 'Reaction updated successfully.',
+            message: 'Reaction added successfully.',
         });
     } catch (error) {
         console.log(error);

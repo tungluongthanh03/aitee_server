@@ -3,6 +3,7 @@ import { GroupChatRepo, MessageRepo } from '../../models/index.js';
 export default async (req, res) => {
     const currentUserId = req.user.id; // Assuming you're getting the current user's ID from a session or token
 
+
     const query = `
 WITH LatestMessages AS (
     SELECT DISTINCT ON (
@@ -70,87 +71,76 @@ FROM LatestMessages
 ORDER BY "createdAt" DESC;
 `;
 
-const q = `SELECT 
-        g."groupID",
-        g.name,
-        g.avatar,
-        g."createdAt"
-    FROM 
-        "group_chat" g
-    JOIN 
-        "groupChat_user" gm ON gm."groupID" = g."groupID"
-    WHERE 
-        gm."userID" = $1;`
-
-const g = await GroupChatRepo.query(q, [currentUserId]);
-
-console.log("22222222222", g);
-
-
-
 
     try {
         const conversations = await MessageRepo.query(query, [currentUserId]);
-        console.log("uuuuuuuuuuuuuuuuuuuu",conversations);
         return res.status(200).json({
             success: true,
             conversations,
         });
 
     } catch (error) {
-        console.log(error);
         return res.status(500).json({
             error: 'An internal server error occurred, please try again after a few minutes!',
         });
-    }
+
 };
 
 /**
  * @swagger
- * /user/change-password:
- *    post:
- *      summary: Changes the Password
- *      parameters:
- *        - in: header
- *          name: Authorization
- *          schema:
- *            type: string
- *          description: Put access token here
- *      requestBody:
- *        description: Old and new passwords
- *        required: true
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                newPassword:
- *                  type: string
- *      tags:
- *        - User
- *      responses:
- *        "200":
- *          description: Your password was changed successfully.
- *          content:
- *              application/json:
- *                  schema:
- *                      $ref: '#/components/schemas/Result'
- *        "400":
- *          description: Please provide old and new passwords that are longer than 6 letters and shorter than 20 letters.
- *          content:
- *              application/json:
- *                  schema:
- *                      $ref: '#/components/schemas/Result'
- *        "401":
- *          description: Invalid token.
- *          content:
- *              application/json:
- *                  schema:
- *                      $ref: '#/components/schemas/Result'
- *        "500":
- *          description: An internal server error occurred, please try again.
- *          content:
- *              application/json:
- *                  schema:
- *                      $ref: '#/components/schemas/Result'
+ * /chat/conversations:
+ *   get:
+ *     summary: Get a list of conversations
+ *     security:
+ *       - bearerAuth: []
+ *     tags:
+ *       - Chat
+ *     responses:
+ *       "200":
+ *         description: A list of conversations has been retrieved successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 conversations:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       messageID:
+ *                         type: string
+ *                         example: "123e4567-e89b-12d3-a456-426614174000"
+ *                       targetType:
+ *                         type: string
+ *                         example: "group"
+ *                       targetId:
+ *                         type: string
+ *                         example: "123e4567-e89b-12d3-a456-426614174000"
+ *                       targetName:
+ *                         type: string
+ *                         example: "Group Chat Name"
+ *                       targetAvatar:
+ *                         type: string
+ *                         example: "http://example.com/avatar.jpg"
+ *                       lastMessage:
+ *                         type: string
+ *                         example: "This is the last message."
+ *                       createdAt:
+ *                         type: string
+ *                         format: date-time
+ *                         example: "2023-01-01T00:00:00Z"
+ *       "500":
+ *         description: An internal server error occurred, please try again after a few minutes.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "An internal server error occurred, please try again after a few minutes."
  */

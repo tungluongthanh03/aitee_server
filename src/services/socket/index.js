@@ -73,10 +73,9 @@ export const initializeSocket = (io) => {
                     } else {
                         console.log(`User ${sendToUser} is offline.`);
                     }
-                }
-                else {
-                    io.to(sendToGroupChat).emit("receivedMessageGroup", receivedMessage)
-                    console.log("emit successfully");
+                } else {
+                    io.to(sendToGroupChat).emit('receivedMessageGroup', receivedMessage);
+                    console.log('emit successfully');
                 }
 
             } catch (error) {

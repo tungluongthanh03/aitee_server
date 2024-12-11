@@ -130,6 +130,12 @@ export const User = new EntitySchema({
                 inverseJoinColumn: { name: 'groupID', referencedColumnName: 'groupID' },
             },
         },
+        notifications: {
+            target: 'Notification',
+            type: 'one-to-many',
+            cascade: true,
+            inverseSide: 'user',
+        },
     },
 });
 
@@ -210,4 +216,20 @@ export const User = new EntitySchema({
  *           type: array
  *           items:
  *             $ref: '#/components/schemas/Friend'
+ *         blockers:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Block'
+ *         blockeds:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Block'
+ *         has:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/GroupChat'
+ *         notifications:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Notification'
  */

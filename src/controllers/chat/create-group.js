@@ -45,3 +45,87 @@ export default async (req, res) => {
         });
     }
 };
+
+/**
+ * @swagger
+ * /chat/create-group:
+ *   post:
+ *     summary: Create a new group chat
+ *     security:
+ *       - bearerAuth: []
+ *     tags:
+ *       - Chat
+ *     requestBody:
+ *       description: List of user IDs and group name
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               listUserIds:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   example: "123e4567-e89b-12d3-a456-426614174000"
+ *               name:
+ *                 type: string
+ *                 example: "Group Chat Name"
+ *     responses:
+ *       "200":
+ *         description: Group chat created successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 groupChat:
+ *                   type: object
+ *                   properties:
+ *                     groupID:
+ *                       type: string
+ *                       example: "123e4567-e89b-12d3-a456-426614174000"
+ *                     name:
+ *                       type: string
+ *                       example: "Group Chat Name"
+ *                     createBy:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: string
+ *                           example: "123e4567-e89b-12d3-a456-426614174000"
+ *                         username:
+ *                           type: string
+ *                           example: "john_doe"
+ *                     has:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: string
+ *                             example: "123e4567-e89b-12d3-a456-426614174001"
+ *                           username:
+ *                             type: string
+ *                             example: "jane_doe"
+ *       "400":
+ *         description: Invalid input data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Invalid input data."
+ *       "500":
+ *         description: An internal server error occurred, please try again.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "An internal server error occurred, please try again."
+ */

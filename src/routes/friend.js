@@ -9,6 +9,7 @@ import {
     deleteFriend,
     blockUser,
     listBlock,
+    listFriendOther,
 } from '../controllers/friend/index.js';
 import { auth } from '../middlewares/index.js';
 
@@ -22,5 +23,6 @@ router.get('/list-friends', auth, listFriend);
 router.get('/list-requests', auth, listRequest);
 router.post('/block/:blockedId', auth, blockUser);
 router.get('/list-blocks', auth, listBlock);
+router.get('/list-friend-other/:userId', auth, listFriendOther);
 
 export default router;

@@ -6,7 +6,7 @@ export const GroupChat = new EntitySchema({
         groupID: {
             type: 'uuid',
             primary: true,
-            generated: "uuid",
+            generated: 'uuid',
         },
         name: {
             type: 'varchar',
@@ -21,17 +21,16 @@ export const GroupChat = new EntitySchema({
             length: 255,
             nullable: true,
         },
-
     },
     relations: {
         createBy: {
             type: 'many-to-one',
-            target: 'User',  // Reference to the User entity
+            target: 'User', // Reference to the User entity
             joinColumn: { name: 'createBy' },
         },
         has: {
             type: 'many-to-many',
-            target: 'User',  // Reference to the User entity
+            target: 'User', // Reference to the User entity
             joinTable: {
                 name: 'groupChat_user',
                 joinColumn: { name: 'groupID', referencedColumnName: 'groupID' },
@@ -40,3 +39,23 @@ export const GroupChat = new EntitySchema({
         },
     },
 });
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     GroupChat:
+ *       type: object
+ *       properties:
+ *         groupID:
+ *           type: string
+ *           format: uuid
+ *         name:
+ *           type: string
+ *         createBy:
+ *           $ref: '#/components/schemas/User'
+ *         has:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/User'
+ */

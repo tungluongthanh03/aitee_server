@@ -55,3 +55,79 @@ export default async (req, res) => {
         });
     }
 };
+
+/**
+ * @swagger
+ * /chat/search:
+ *   post:
+ *     summary: Search for users and groups
+ *     security:
+ *       - bearerAuth: []
+ *     tags:
+ *       - Chat
+ *     requestBody:
+ *       description: Username or group name to search for
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 example: "john_doe"
+ *     responses:
+ *       "200":
+ *         description: A list of users and groups has been retrieved successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 listTarget:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       targetId:
+ *                         type: string
+ *                         example: "123e4567-e89b-12d3-a456-426614174000"
+ *                       targetName:
+ *                         type: string
+ *                         example: "john_doe"
+ *                       targetAvatar:
+ *                         type: string
+ *                         example: "http://example.com/avatar.jpg"
+ *                       targetType:
+ *                         type: string
+ *                         example: "user"
+ *       "404":
+ *         description: The name not found in your friends list or groups.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "The name not found in your friends list or groups! Please try again."
+ *       "500":
+ *         description: An internal server error occurred, please try again.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Error fetching messages"
+ */
