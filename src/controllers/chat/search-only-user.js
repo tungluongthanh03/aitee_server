@@ -12,10 +12,10 @@ export default async (req, res) => {
             u.username AS "targetName",
             u.avatar AS "targetAvatar",
             'user' AS "targetType"
-        FROM "user" u
-        JOIN "is_friend" f
-            ON (f."userID1" = u.id AND f."userID2" = $1)
-            OR (f."userID1" = $1 AND f."userID2" = u.id)
+        FROM "users" u
+        JOIN "friends" f
+            ON (f."acceptorId" = u.id AND f."acceptedId" = $1)
+            OR (f."acceptorId" = $1 AND f."acceptedId" = u.id)
         WHERE u.username ILIKE $2
         ORDER BY "targetName" ASC
     `;

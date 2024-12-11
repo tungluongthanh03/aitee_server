@@ -123,7 +123,7 @@ export const User = new EntitySchema({
         },
         has: {
             type: 'many-to-many',
-            target: 'GroupChat',  // Reference to the User entity
+            target: 'GroupChat',
             joinTable: {
                 name: 'groupChat_user',
                 joinColumn: { name: 'userID', referencedColumnName: 'id' },

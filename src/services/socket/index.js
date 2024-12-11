@@ -1,7 +1,8 @@
 import { getGroups, storeMessage } from '../chat/index.js'; // Import the function to store messages in the database
+import { uploadMedia } from '../cloudinary/index.js';
 import { getFriendList } from '../user/index.js';
 
-const onlineUsers = new Map(); // Map userId -> socketId
+export const onlineUsers = new Map(); // Map userId -> socketId
 
 // Function to initialize and handle socket connections
 export const initializeSocket = (io) => {
@@ -10,11 +11,23 @@ export const initializeSocket = (io) => {
         socket.on('userConnected', async ({ id }) => {
             onlineUsers.set(id, socket.id);
             const groups = await getGroups(id);
-            console.log(groups);
             groups.forEach((group) => {
                 socket.join(group.groupID);
-                
             });
+        });
+
+        socket.on("join-group", (groupID) => {
+            if (socket.rooms.has(groupID)) {
+              console.log(`User ${socket.id} is already in group ${groupID}`);
+              return;
+            }
+            socket.join(groupID);
+            console.log(`User ${socket.id} joined group ${groupID}`);
+          });
+
+        socket.on('leave-group', (groupID) => {
+            socket.leave(groupID);
+            console.log(`User ${socket.id} left room ${groupID}`);
         });
 
         socket.on('getFriendsOnline', async (currentUser) => {
@@ -26,14 +39,37 @@ export const initializeSocket = (io) => {
         socket.on('sendMessage', async (message) => {
             try {
                 // Save the message in the database
-                const receivedMessage = await storeMessage(message);
-                const { sendToUser, sendToGroupChat, content } = message;
+                let { media, ...mes } = message;
+                if(media) {
+                    media = media.map(media => {
+                        return { buffer: media };
+                    });
+                    const mediaUrls = await Promise.all(media.map((file) => uploadMedia(file)));
+    
+                    const images = mediaUrls.filter((media) => media.includes('image'));
+                    const videos = mediaUrls.filter((media) => media.includes('video'));
 
+                    const senderSocketId = onlineUsers.get(mes.sendFrom); // Lookup sender's socket ID
+                    if (senderSocketId) {
+                        io.to(senderSocketId).emit('handledMedia', { images, videos });
+                    }
+                    mes = { ...mes, images, videos };
+                }
+
+                let receivedMessage = await storeMessage(mes);
+                receivedMessage.createdAt = new Date(receivedMessage.createdAt).toLocaleString('en-US', {
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: 'numeric',
+                    minute: '2-digit',
+                  });
+
+                const { sendToUser, sendToGroupChat } = message;
                 if (sendToUser) {
                     const recipientSocketId = onlineUsers.get(sendToUser); // Lookup recipient's socket ID
                     if (recipientSocketId) {
                         io.to(recipientSocketId).emit('receivedMessage', receivedMessage);
-                        console.log('send to user/groupchat: ' + recipientSocketId);
+                        console.log('send to user: ' + recipientSocketId);
                     } else {
                         console.log(`User ${sendToUser} is offline.`);
                     }
@@ -43,13 +79,15 @@ export const initializeSocket = (io) => {
                     console.log("emit successfully");
                 }
 
-                // Optionally, notify the sendFrom about the delivery status
-                // socket.emit('messageDeliveryStatus', { recipient, delivered: !!recipientSocketId });
             } catch (error) {
                 console.error('Error handling sendMessage:', error);
                 // socket.emit('messageError', { error: 'Failed to send message.' });
             }
         });
+        socket.on("logout", () => {
+            console.log(`User disconnected: ${socket.id}`);
+            socket.disconnect(true); // Forcefully disconnect the socket
+          });
 
         socket.on('disconnect', () => {
             for (const [userId, socketId] of onlineUsers.entries()) {

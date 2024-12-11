@@ -3,44 +3,47 @@ import { GroupChatRepo, MessageRepo } from '../../models/index.js';
 export const storeMessage = async (message) => {
     const query = `
     WITH inserted_message AS (
-    INSERT INTO message (content, "sendFrom", "sendToUser", "sendToGroupChat", "createdAt")
-    VALUES ($1, $2, $3, $4, $5)
+    INSERT INTO message (content, images, videos, "sendFrom", "sendToUser", "sendToGroupChat", "createdAt")
+    VALUES ($1, $2, $3, $4, $5, $6, $7)
     RETURNING *
-)
-SELECT 
-    im.*,
-    CASE
-        WHEN im."sendToUser" IS NOT NULL THEN u."username"
-        ELSE NULL
-    END as username,
-    CASE
-        WHEN im."sendToUser" IS NOT NULL THEN u."avatar"
-        ELSE NULL
-    END AS "userAvatar",
-    CASE
-        WHEN im."sendToGroupChat" IS NOT NULL THEN g."name"
-        ELSE NULL
-    END as "groupName",
-    CASE
-        WHEN im."sendToGroupChat" IS NOT NULL THEN g."avatar"
-        ELSE NULL
-    END AS "groupChatAvatar"
-FROM 
-    inserted_message im
-LEFT JOIN 
-    "user" u ON u."id" = im."sendFrom"
-LEFT JOIN 
-    "group_chat" g ON g."groupID" = im."sendToGroupChat";
+    )
+    SELECT 
+        im.*,
+        CASE
+            WHEN im."sendToUser" IS NOT NULL THEN u."username"
+            ELSE NULL
+        END as username,
+        CASE
+            WHEN im."sendToUser" IS NOT NULL THEN u."avatar"
+            ELSE NULL
+        END AS "userAvatar",
+        CASE
+            WHEN im."sendToGroupChat" IS NOT NULL THEN g."name"
+            ELSE NULL
+        END as "groupName",
+        CASE
+            WHEN im."sendToGroupChat" IS NOT NULL THEN g."avatar"
+            ELSE NULL
+        END AS "groupChatAvatar"
+    FROM 
+        inserted_message im
+    LEFT JOIN 
+        "users" u ON u."id" = im."sendFrom"
+    LEFT JOIN 
+        "group_chat" g ON g."groupID" = im."sendToGroupChat";
 
-`;
+    `;
 
     const values = [
         message.content,
+        JSON.stringify(message.images),
+        JSON.stringify(message.videos),
         message.sendFrom,
         message.sendToUser || null, // Use NULL if sendToUser is not provided
         message.sendToGroupChat || null, // Use NULL if sendToGroupChat is not provided
-        new Date(), // Current timestamp
+        new Date(message.createdAt)
     ];
+
 
     try {
         const result = await MessageRepo.query(query, values);

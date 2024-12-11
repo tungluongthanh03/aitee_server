@@ -1,4 +1,6 @@
+import { io } from '../../index.js';
 import { GroupChatRepo, UserRepo } from '../../models/index.js';
+import { onlineUsers } from '../../services/socket/index.js';
 
 export default async (req, res) => {
     const { listUserIds, name } = req.body;
@@ -28,6 +30,13 @@ export default async (req, res) => {
             success: true,
             groupChat: newGroupChat,
         });
+
+        newGroupChat.has.forEach((user) => {
+            // Emit a 'new-group' event to each user in the group
+            const userSocketId = onlineUsers.get(user.id);
+            io.to(userSocketId).emit('new-group', newGroupChat);
+        })
+
     } catch (error) {
         console.error('Error creating group: ', error);
         res.status(500).json({

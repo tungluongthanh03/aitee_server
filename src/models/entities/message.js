@@ -16,11 +16,11 @@ export const Message = new EntitySchema({
             default: () => 'CURRENT_TIMESTAMP',
         },
         images: {
-            type: 'simple-array',   // Can store image URLs as array
+            type: 'json',   // Can store image URLs as array
             nullable: true,
         },
         videos: {
-            type: 'simple-array',   // Can store video URLs as array
+            type: 'json',   // Can store video URLs as array
             nullable: true,
         },
     },
@@ -40,5 +40,6 @@ export const Message = new EntitySchema({
             target: 'GroupChat',  // Reference to the User entity
             joinColumn: { name: 'sendToGroupChat' },
         },
+
     },
 });

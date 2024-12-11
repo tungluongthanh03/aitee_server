@@ -8,7 +8,6 @@ export default async (req, res) => {
             where: { groupID: groupId },
             relations: ['createBy', 'has'],
         });
-        console.log(details);
         res.status(200).json({
             success: true,
             details,

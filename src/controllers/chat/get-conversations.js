@@ -1,10 +1,10 @@
-import { MessageRepo } from '../../models/index.js';
+import { GroupChatRepo, MessageRepo } from '../../models/index.js';
 
 export default async (req, res) => {
     const currentUserId = req.user.id; // Assuming you're getting the current user's ID from a session or token
-    
+
     const query = `
-    WITH LatestMessages AS (
+WITH LatestMessages AS (
     SELECT DISTINCT ON (
         CASE 
             WHEN m."sendToGroupChat" IS NOT NULL THEN m."sendToGroupChat"
@@ -35,20 +35,25 @@ export default async (req, res) => {
         m."content" AS "lastMessage",
         m."createdAt"
     FROM "message" m
-    LEFT JOIN "user" u 
+    LEFT JOIN "users" u 
         ON u."id" = CASE 
                     WHEN m."sendFrom" = $1 THEN m."sendToUser"
                     ELSE m."sendFrom"
                    END
     LEFT JOIN "group_chat" g 
         ON g."groupID" = m."sendToGroupChat"
-    WHERE m."sendFrom" = $1 
-       OR m."sendToUser" = $1 
-       OR m."sendToGroupChat" IN (
-           SELECT gcu."groupID"
-           FROM "groupChat_user" gcu
-           WHERE gcu."userID" = $1
-       )
+    WHERE 
+    -- Private messages
+    (m."sendFrom" = $1 OR m."sendToUser" = $1)
+    -- Group messages: only include if the user is currently a member
+    OR (
+        m."sendToGroupChat" IS NOT NULL 
+        AND m."sendToGroupChat" IN (
+            SELECT gcu."groupID"
+            FROM "groupChat_user" gcu
+            WHERE gcu."userID" = $1
+        )
+    )
     ORDER BY 
         CASE 
             WHEN m."sendToGroupChat" IS NOT NULL THEN m."sendToGroupChat"
@@ -63,23 +68,40 @@ export default async (req, res) => {
 SELECT *
 FROM LatestMessages
 ORDER BY "createdAt" DESC;
-
 `;
+
+const q = `SELECT 
+        g."groupID",
+        g.name,
+        g.avatar,
+        g."createdAt"
+    FROM 
+        "group_chat" g
+    JOIN 
+        "groupChat_user" gm ON gm."groupID" = g."groupID"
+    WHERE 
+        gm."userID" = $1;`
+
+const g = await GroupChatRepo.query(q, [currentUserId]);
+
+console.log("22222222222", g);
+
+
 
 
     try {
         const conversations = await MessageRepo.query(query, [currentUserId]);
+        console.log("uuuuuuuuuuuuuuuuuuuu",conversations);
         return res.status(200).json({
             success: true,
             conversations,
         });
+
     } catch (error) {
         console.log(error);
-        return res
-            .status(500)
-            .json({
-                error: 'An internal server error occurred, please try again after a few minutes!',
-            });
+        return res.status(500).json({
+            error: 'An internal server error occurred, please try again after a few minutes!',
+        });
     }
 };
 
