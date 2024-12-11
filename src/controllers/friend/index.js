@@ -6,3 +6,4 @@ export { default as listRequest } from '../friend/list-request.js';
 export { default as deleteFriend } from '../friend/delete-friend.js';
 export { default as blockUser } from '../friend/block-user.js';
 export { default as listBlock } from '../friend/list-block.js';
+export { default as listFriendOther } from '../friend/list-friend-other.js';
