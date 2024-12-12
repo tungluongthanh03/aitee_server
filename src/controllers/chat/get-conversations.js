@@ -85,6 +85,7 @@ ORDER BY "createdAt" DESC;
         });
 
 };
+}
 
 /**
  * @swagger
@@ -143,4 +144,4 @@ ORDER BY "createdAt" DESC;
  *                 error:
  *                   type: string
  *                   example: "An internal server error occurred, please try again after a few minutes."
- */
+ **/
