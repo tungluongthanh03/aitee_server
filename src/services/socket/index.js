@@ -16,14 +16,14 @@ export const initializeSocket = (io) => {
             });
         });
 
-        socket.on("join-group", (groupID) => {
+        socket.on('join-group', (groupID) => {
             if (socket.rooms.has(groupID)) {
-              console.log(`User ${socket.id} is already in group ${groupID}`);
-              return;
+                console.log(`User ${socket.id} is already in group ${groupID}`);
+                return;
             }
             socket.join(groupID);
             console.log(`User ${socket.id} joined group ${groupID}`);
-          });
+        });
 
         socket.on('leave-group', (groupID) => {
             socket.leave(groupID);
@@ -40,12 +40,12 @@ export const initializeSocket = (io) => {
             try {
                 // Save the message in the database
                 let { media, ...mes } = message;
-                if(media) {
-                    media = media.map(media => {
+                if (media) {
+                    media = media.map((media) => {
                         return { buffer: media };
                     });
                     const mediaUrls = await Promise.all(media.map((file) => uploadMedia(file)));
-    
+
                     const images = mediaUrls.filter((media) => media.includes('image'));
                     const videos = mediaUrls.filter((media) => media.includes('video'));
 
@@ -57,12 +57,15 @@ export const initializeSocket = (io) => {
                 }
 
                 let receivedMessage = await storeMessage(mes);
-                receivedMessage.createdAt = new Date(receivedMessage.createdAt).toLocaleString('en-US', {
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: 'numeric',
-                    minute: '2-digit',
-                  });
+                receivedMessage.createdAt = new Date(receivedMessage.createdAt).toLocaleString(
+                    'en-US',
+                    {
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: 'numeric',
+                        minute: '2-digit',
+                    },
+                );
 
                 const { sendToUser, sendToGroupChat } = message;
                 if (sendToUser) {
@@ -77,16 +80,15 @@ export const initializeSocket = (io) => {
                     io.to(sendToGroupChat).emit('receivedMessageGroup', receivedMessage);
                     console.log('emit successfully');
                 }
-
             } catch (error) {
                 console.error('Error handling sendMessage:', error);
                 // socket.emit('messageError', { error: 'Failed to send message.' });
             }
         });
-        socket.on("logout", () => {
+        socket.on('logout', () => {
             console.log(`User disconnected: ${socket.id}`);
             socket.disconnect(true); // Forcefully disconnect the socket
-          });
+        });
 
         socket.on('disconnect', () => {
             for (const [userId, socketId] of onlineUsers.entries()) {

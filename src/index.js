@@ -11,11 +11,11 @@ const server = http.createServer(app);
 // Initialize Socket.IO
 export const io = new Server(server, {
     cors: {
-        origin: ['http://localhost:3001', 'http://localhost:3002'], // Add more URLs here
+        origin: '*', // Add more URLs here
         methods: ['GET', 'POST'],
     },
     maxHttpBufferSize: 1e7,
-  });  
+});
 
 initializeSocket(io);
 

@@ -12,39 +12,34 @@ export default async (req, res) => {
         const limit = parseInt(req.query.limit);
         const skip = (page - 1) * limit;
 
-        let [friends, total] = await FriendRepo.findAndCount({
-            where: [{ acceptorId: req.params.id }, { acceptedId: req.params.id }],
-            take: limit,
-            skip,
-            order: { createdAt: 'DESC' },
-            relations: ['acceptor', 'accepted'],
-        });
+        const query = `
+            SELECT * FROM friends
+            WHERE "acceptorId" = $1 OR "acceptedId" = $1
+            ORDER BY "createdAt" DESC
+            LIMIT $2 OFFSET $3
+        `;
 
-        // Omit user's data
-        friends = friends.map((friend) => ({
-            createdAt: friend.createdAt,
-            user: {
-                id: friend.acceptorId === req.user.id ? friend.accepted.id : friend.acceptor.id,
-                username:
-                    friend.acceptorId === req.user.id
-                        ? friend.accepted.username
-                        : friend.acceptor.username,
-                avatar:
-                    friend.acceptorId === req.user.id
-                        ? friend.accepted.avatar
-                        : friend.acceptor.avatar,
-                firstName:
-                    friend.acceptorId === req.user.id
-                        ? friend.accepted.firstName
-                        : friend.acceptor.firstName,
-                lastName:
-                    friend.acceptorId === req.user.id
-                        ? friend.accepted.lastName
-                        : friend.acceptor.lastName,
-            },
-        }));
+        const list = await FriendRepo.query(query, [req.user.id, limit, skip]);
 
-        return res.status(200).json({ friends, total });
+        const query1 = `
+            SELECT "id", "username", "avatar", "firstName", "lastName"
+            FROM "users"
+            WHERE "id" = $1
+        `;
+
+        const friends = await Promise.all(
+            list.map(async (friend) => {
+                const user = await FriendRepo.query(query1, [
+                    friend.acceptorId === req.user.id ? friend.acceptedId : friend.acceptorId,
+                ]);
+                return {
+                    createdAt: friend.createdAt,
+                    user: user[0] || {},
+                };
+            }),
+        );
+
+        return res.status(200).json({ friends });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'An internal server error occurred, please try again.' });
