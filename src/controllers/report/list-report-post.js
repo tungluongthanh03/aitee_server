@@ -1,32 +1,94 @@
-import { ReportPostRepo } from '../../models/index.js';
+import { ReportPostRepo, PostRepo } from '../../models/index.js';
 
 export const listReportPost = async (req, res) => {
     try {
-        const page = parseInt(req.query.page);
-        const limit = 1;
+        const page = parseInt(req.query.page || 1);
+        const limit = parseInt(req.query.limit || 1);
         const skip = (page - 1) * limit;
 
-        const [posts, total] = await ReportPostRepo.findAndCount({
-            take: limit,
-            skip,
-            order: {
-                createdAt: 'DESC',
-            },
-            where: {
-                status: false,
-                canRequestAdmin: true,
-            },
-            relations: ['post'],
-        });
+        // get all post reports
+        const query1 = `
+            WITH PostDetails AS (
+                SELECT 
+                    "p".*,
+                    COUNT(DISTINCT "r"."postId") AS "nReactions",
+                    COUNT(DISTINCT "c"."id") AS "nComments",
+                    CASE 
+                        WHEN EXISTS (
+                            SELECT 1 
+                            FROM "reacts" "ur" 
+                            WHERE "ur"."postId" = "p"."id" AND "ur"."userId" = $1
+                        ) THEN true 
+                        ELSE false 
+                    END AS "isReacted",
+                    "p"."id" AS "postId"
+                FROM "posts" "p"
+                LEFT JOIN "reacts" "r" ON "r"."postId" = "p"."id"
+                LEFT JOIN "comments" "c" ON "c"."postId" = "p"."id"
+                GROUP BY "p"."id"
+            )
+            SELECT 
+                "rp"."id" AS "reportId",
+                "rp"."nReport",
+                "rp"."reportRate",
+                "rp"."createdAt" AS "reportCreatedAt",
+                pd.*
+            FROM "reportPosts" "rp"
+            LEFT JOIN PostDetails pd ON pd."postId" = "rp"."postId"
+            WHERE "rp"."status" = false AND "rp"."canRequestAdmin" = true
+            ORDER BY "rp"."createdAt" DESC
+            LIMIT $2 OFFSET $3;
+        `;
 
-        if (total === 0) {
-            return res.status(404).json({ message: 'No reports found with the given conditions.' });
-        }
-        if (skip >= total) {
-            return res.status(404).json({ message: 'No more reports available.' });
+        let posts = await ReportPostRepo.query(query1, [req.user.id, limit, skip]);
+
+        // format posts
+        posts = posts.map((post) => ({
+            id: post.reportId,
+            nReport: post.nReport,
+            reportRate: post.reportRate,
+            createdAt: post.reportCreatedAt,
+            post: {
+                id: post.id,
+                content: post.content,
+                images: post.images,
+                videos: post.videos,
+                nViews: post.nViews,
+                createdAt: post.createdAt,
+                userId: post.userId,
+                nReactions: post.nReactions,
+                nComments: post.nComments,
+                isReacted: post.isReacted,
+            },
+        }));
+
+        if (posts.length === 0) {
+            return res.status(404).json({ error: 'No reports found with the given conditions.' });
         }
 
-        return res.status(200).json({ posts, total });
+        // Query to fetch sample comments for each post
+        const query2 = `
+            SELECT 
+                c.*,
+                u."username" AS "repliedUser"
+            FROM "comments" c
+            LEFT JOIN "comments" root ON c."rootId" = root."id"
+            LEFT JOIN "users" u ON root."userId" = u."id"
+            WHERE c."postId" = $1
+            ORDER BY c."createdAt" DESC
+            LIMIT 3
+        `;
+
+        // Add sample comments and format posts
+        for (let post of posts) {
+            const comments = await PostRepo.query(query2, [post.post.id]);
+
+            post.post.sampleComments = comments;
+            post.post.nReactions = +post.post.nReactions;
+            post.post.nComments = +post.post.nComments;
+        }
+
+        return res.status(200).json(posts);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'An internal server error occurred, please try again.' });

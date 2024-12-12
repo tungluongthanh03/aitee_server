@@ -18,8 +18,8 @@ const router = Router();
 router.get('/report-list-post', auth, checkAdmin, listReportPost);
 router.get('/report-list-user', auth, checkAdmin, listReportUser);
 
-router.put('/irnore-report-post/:reportId', auth, checkAdmin, ignoreReportPost);
-router.put('/irnore-report-user/:reportId', auth, checkAdmin, ignoreReportUser);
+router.put('/ignore-report-post/:reportId', auth, checkAdmin, ignoreReportPost);
+router.put('/ignore-report-user/:reportId', auth, checkAdmin, ignoreReportUser);
 
 router.delete('/accept-report-post/:reportId', auth, checkAdmin, acceptReportPost);
 router.delete('/accept-report-user/:reportId', auth, checkAdmin, acceptReportUser);

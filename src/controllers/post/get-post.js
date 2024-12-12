@@ -2,18 +2,45 @@ import { PostRepo } from '../../models/index.js';
 
 export const getPost = async (req, res) => {
     try {
-        const post = await PostRepo.createQueryBuilder('post')
-            .leftJoinAndSelect('post.reactions', 'reactions')
-            .leftJoinAndSelect('post.comments', 'comments')
-            .leftJoin(
-                'Block',
-                'block',
-                'block.blockedId = :requestUserId AND block.blockerId = post.userId',
-                { requestUserId: req.user.id },
-            )
-            .where('post.id = :postId', { postId: req.params.postId })
-            .andWhere('block.blockedId IS NULL')
-            .getOne();
+        // get post by id
+        const query1 = `
+            SELECT 
+                "p".*,
+                COUNT(DISTINCT "r"."postId") AS "nReactions",
+                COUNT(DISTINCT "c"."id") AS "nComments",
+                CASE 
+                    WHEN EXISTS (
+                        SELECT 1 
+                        FROM "reacts" "ur" 
+                        WHERE "ur"."postId" = "p"."id" AND "ur"."userId" = $1
+                    ) THEN true 
+                    ELSE false 
+                END AS "isReacted"
+            FROM "posts" "p"
+            LEFT JOIN "blocks" "b" ON "b"."blockedId" = $1 AND "b"."blockerId" = "p"."userId"
+            LEFT JOIN "reacts" "r" ON "r"."postId" = "p"."id"
+            LEFT JOIN "comments" "c" ON "c"."postId" = "p"."id"
+            WHERE "p"."id" = $2 AND "b"."blockedId" IS NULL
+            GROUP BY "p"."id"
+        `;
+
+        const posts = await PostRepo.query(query1, [req.user.id, req.params.postId]);
+        const post = posts.length ? posts[0] : null;
+
+        // get sample comments
+        const query2 = `
+            SELECT 
+                c.*,
+                u."username" AS "repliedUser"
+            FROM "comments" c
+            LEFT JOIN "comments" root ON c."rootId" = root."id"
+            LEFT JOIN "users" u ON root."userId" = u."id"
+            WHERE c."postId" = $1
+            ORDER BY c."createdAt" DESC
+            LIMIT 3
+        `;
+
+        const comments = await PostRepo.query(query2, [req.params.postId]);
 
         if (!post) {
             return res.status(404).json({
@@ -26,12 +53,9 @@ export const getPost = async (req, res) => {
         await PostRepo.save(post);
 
         // Format post data
-        post.nReactions = post.reactions ? post.reactions.length : 0;
-        post.reactions = undefined;
-
-        post.nComments = post.comments ? post.comments.length : 0;
-        post.sampleComments = post.comments ? post.comments.slice(0, 3) : [];
-        post.comments = undefined;
+        post.sampleComments = comments;
+        post.nReactions = +post.nReactions;
+        post.nComments = +post.nComments;
 
         return res.status(200).json({
             post,

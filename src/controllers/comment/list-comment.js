@@ -10,42 +10,50 @@ export default async (req, res) => {
             });
         }
 
+        const postId = req.params.postId;
+
         // get post
-        const post = await PostRepo.findOne({
-            where: {
-                id: req.query.postId,
-            },
-            relations: ['user'],
-        });
+        const queryPost = `
+            SELECT "p".*
+            FROM "posts" "p"
+            LEFT JOIN "blocks" "b" ON "b"."blockedId" = $1 AND "b"."blockerId" = "p"."userId"
+            WHERE "p"."id" = $2 AND "b"."blockedId" IS NULL
+        `;
 
-        // check if current user is blocked by the post owner
-        const block = await BlockRepo.findOne({
-            where: {
-                blocker: { id: post.user.id },
-                blocked: { id: req.user.id },
-            },
-        });
+        const posts = await PostRepo.query(queryPost, [req.user.id, postId]);
+        const post = posts.length ? posts[0] : null;
 
-        if (block) {
-            return res.status(403).json({
-                error: 'You do not have permission to view comments for this post.',
+        if (!post) {
+            return res.status(404).json({
+                error: 'Post not found or you are blocked by the post owner.',
             });
         }
 
         const page = parseInt(req.query.page);
         const limit = parseInt(req.query.limit);
-        const skip = (page - 1) * limit;
+        const offset = (page - 1) * limit;
+        const queryComments = `
+            SELECT 
+                c.*,
+                u."username" AS "repliedUser"
+            FROM "comments" c
+            LEFT JOIN "comments" root ON c."rootId" = root."id"
+            LEFT JOIN "users" u ON root."userId" = u."id"
+            WHERE c."postId" = $1
+            ORDER BY c."createdAt" DESC
+            LIMIT $2 OFFSET $3
+        `;
 
-        const [comments, total] = await CommentRepo.findAndCount({
-            take: limit,
-            skip,
-            order: {
-                createdAt: 'DESC',
-            },
-            where: {
-                post: { id: post.id },
-            },
-        });
+        const comments = await PostRepo.query(queryComments, [postId, limit, offset]);
+
+        // get total comments
+        const totalQuery = `
+            SELECT COUNT(*) AS "totalComments"
+            FROM "comments"
+            WHERE "postId" = $1
+        `;
+        const totalResult = await PostRepo.query(totalQuery, [postId]);
+        const total = totalResult[0] ? +totalResult[0].totalComments : 0;
 
         return res.status(200).json({ comments, total });
     } catch (error) {

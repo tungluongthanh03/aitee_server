@@ -12,53 +12,69 @@ export const getPostsByUserId = async (req, res) => {
 
         const page = parseInt(req.query.page);
         const limit = parseInt(req.query.limit);
-        const skip = (page - 1) * limit;
+        const offset = (page - 1) * limit;
 
-        const queryBuilder = PostRepo.createQueryBuilder('post');
-        queryBuilder
-            .leftJoin(
-                'Block',
-                'block',
-                'block.blockedId = :currentUserId AND block.blockerId = :postOwnerId',
-                {
-                    currentUserId: req.user.id,
-                    postOwnerId: req.params.userId,
-                },
-            )
-            .where('post.userId = :postOwnerId', { postOwnerId: req.params.userId })
-            .andWhere('block.blockedId IS NULL')
-            .skip(skip)
-            .take(limit)
-            .orderBy('post.createdAt', 'DESC')
-            .leftJoinAndSelect('post.reactions', 'reactions')
-            .leftJoinAndSelect('post.comments', 'comments');
+        // Query to fetch posts with reaction and comment counts, and isReacted
+        const query1 = `
+            SELECT 
+                "p".*,
+                COUNT(DISTINCT "r"."postId") AS "nReactions",
+                COUNT(DISTINCT "c"."id") AS "nComments",
+                CASE 
+                    WHEN EXISTS (
+                        SELECT 1 
+                        FROM "reacts" "ur" 
+                        WHERE "ur"."postId" = "p"."id" AND "ur"."userId" = $1
+                    ) THEN true 
+                    ELSE false 
+                END AS "isReacted"
+            FROM "posts" "p"
+            LEFT JOIN "blocks" "b" ON "b"."blockedId" = $1 AND "b"."blockerId" = "p"."userId"
+            LEFT JOIN "reacts" "r" ON "r"."postId" = "p"."id"
+            LEFT JOIN "comments" "c" ON "c"."postId" = "p"."id"
+            WHERE "p"."userId" = $2 AND "b"."blockedId" IS NULL
+            GROUP BY "p"."id"
+            ORDER BY "p"."createdAt" DESC
+            LIMIT $3 OFFSET $4
+        `;
 
-        let [posts, total] = await queryBuilder.getManyAndCount();
+        const posts = await PostRepo.query(query1, [req.user.id, req.params.userId, limit, offset]);
 
-        // update the number of views
-        posts.forEach(async (post) => {
+        // Query to fetch sample comments for each post
+        const query2 = `
+            SELECT 
+                c.*,
+                u."username" AS "repliedUser"
+            FROM "comments" c
+            LEFT JOIN "comments" root ON c."rootId" = root."id"
+            LEFT JOIN "users" u ON root."userId" = u."id"
+            WHERE c."postId" = $1
+            ORDER BY c."createdAt" DESC
+            LIMIT 3
+        `;
+
+        // Add sample comments and format posts
+        for (let post of posts) {
+            const comments = await PostRepo.query(query2, [post.id]);
+
+            post.sampleComments = comments;
+            post.nReactions = +post.nReactions;
+            post.nComments = +post.nComments;
+
+            // Increment the number of views
             post.nViews += 1;
             await PostRepo.save(post);
-        });
+        }
 
-        // remove the reactions from the response and add the number of reactions
-        posts = posts.map((post) => {
-            return {
-                ...post,
-                nReactions: post.reactions.length,
-                reactions: undefined,
-            };
-        });
-
-        // remove the comments from the response and add the number of comments
-        posts = posts.map((post) => {
-            return {
-                ...post,
-                nComments: post.comments.length,
-                sampleComments: post.comments.slice(0, 3),
-                comments: undefined,
-            };
-        });
+        // Total posts count
+        const totalQuery = `
+            SELECT COUNT(*) AS "total"
+            FROM "posts" "p"
+            LEFT JOIN "blocks" "b" ON "b"."blockedId" = $1 AND "b"."blockerId" = "p"."userId"
+            WHERE "p"."userId" = $2 AND "b"."blockedId" IS NULL
+        `;
+        const totalResult = await PostRepo.query(totalQuery, [req.user.id, req.params.userId]);
+        const total = totalResult[0]?.total || 0;
 
         return res.status(200).json({
             posts,
@@ -66,9 +82,9 @@ export const getPostsByUserId = async (req, res) => {
         });
     } catch (error) {
         console.error(error);
-        return res
-            .status(500)
-            .json({ error: 'An internal server error occurred, please try again.' });
+        return res.status(500).json({
+            error: 'An internal server error occurred, please try again.',
+        });
     }
 };
 
