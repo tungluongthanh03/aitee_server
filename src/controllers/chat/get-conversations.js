@@ -3,7 +3,6 @@ import { GroupChatRepo, MessageRepo } from '../../models/index.js';
 export default async (req, res) => {
     const currentUserId = req.user.id; // Assuming you're getting the current user's ID from a session or token
 
-
     const query = `
 WITH LatestMessages AS (
     SELECT DISTINCT ON (
@@ -71,21 +70,18 @@ FROM LatestMessages
 ORDER BY "createdAt" DESC;
 `;
 
-
     try {
         const conversations = await MessageRepo.query(query, [currentUserId]);
         return res.status(200).json({
             success: true,
             conversations,
         });
-
     } catch (error) {
         return res.status(500).json({
             error: 'An internal server error occurred, please try again after a few minutes!',
         });
-
+    }
 };
-}
 
 /**
  * @swagger
@@ -144,4 +140,4 @@ ORDER BY "createdAt" DESC;
  *                 error:
  *                   type: string
  *                   example: "An internal server error occurred, please try again after a few minutes."
- **/
+ */
